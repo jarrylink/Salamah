@@ -1,0 +1,4 @@
+import { FileText } from "lucide-react";
+import { WorkspacePage } from "@/features/dashboard/components/workspace-page";
+
+export default function ReportsPage() { return <WorkspacePage eyebrow="Superadmin / reports" title="Reports" description="Plan the reporting foundation for informed, role-appropriate school decisions." icon={FileText} items={[{ title: "Academic reporting", description: "Prepare the future structure for results and assessment insights.", state: "Planned" }, { title: "Attendance reporting", description: "Set the direction for daily attendance and trend reporting.", state: "Planned" }, { title: "Finance reporting", description: "Prepare the basis for fees and financial oversight reports.", state: "Planned" }, { title: "Operational reports", description: "Shape the high-level reporting needs of school administration.", state: "Planned" }]} />; }

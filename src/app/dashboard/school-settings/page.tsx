@@ -1,0 +1,4 @@
+import { Settings2 } from "lucide-react";
+import { WorkspacePage } from "@/features/dashboard/components/workspace-page";
+
+export default function SchoolSettingsPage() { return <WorkspacePage eyebrow="Superadmin / school settings" title="School settings" description="Maintain the core institutional settings that will guide every connected operational module." icon={Settings2} items={[{ title: "School profile", description: "Manage the foundational institutional identity and contact information.", state: "Next module" }, { title: "Operational preferences", description: "Set common conventions used by administration and academic workflows.", state: "Planned" }, { title: "Notification rules", description: "Prepare the routing principles for school communication.", state: "Planned" }, { title: "Security preferences", description: "Review the controls that support secure daily system use.", state: "Role-aware" }]} />; }
