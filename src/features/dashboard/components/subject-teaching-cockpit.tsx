@@ -54,6 +54,7 @@ export type SubjectTeachingProps = {
   initialTab?: "scheme" | "notes" | "plans" | "scores";
   onSelectClass?: (classId: string) => void;
   onBack?: () => void;
+  isSuperAdmin?: boolean;
 };
 
 export function SubjectTeachingCockpit({
@@ -66,6 +67,7 @@ export function SubjectTeachingCockpit({
   initialTab = "scheme",
   onSelectClass,
   onBack,
+  isSuperAdmin = false,
 }: SubjectTeachingProps) {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<"scheme" | "notes" | "plans" | "scores">(initialTab);
@@ -140,7 +142,7 @@ export function SubjectTeachingCockpit({
     if (onBack) {
       onBack();
     } else {
-      router.push("/dashboard/subjects");
+      router.push("/dashboard");
     }
   };
 
@@ -678,17 +680,30 @@ Complete the workbook chapter review worksheet. Submit notebooks at the beginnin
       {/* Top Banner & Context */}
       <div className="rounded-3xl border border-slate-800 bg-[#092233] p-6 shadow-xl">
         <div className="flex flex-wrap items-center justify-between gap-4 border-b border-slate-800 pb-4">
-          <div className="flex items-center gap-3">
-            <button
-              onClick={handleBackNavigation}
-              className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-xs font-bold text-slate-300 hover:text-white hover:border-[#dfba73] transition"
-            >
-              <ArrowLeft className="h-4 w-4" />
-              <span>Back to Subjects</span>
-            </button>
+          <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+            <div className="flex items-center gap-2">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-1.5 rounded-xl border border-[#dfba73]/40 bg-slate-950 px-3.5 py-2 text-xs font-bold text-[#dfba73] hover:text-white hover:border-[#dfba73] hover:bg-[#dfba73]/20 transition shadow-xs"
+                title="Return to Staff Dashboard"
+              >
+                <ArrowLeft className="h-4 w-4 shrink-0" />
+                <span>Back to Dashboard</span>
+              </Link>
+
+              {isSuperAdmin && (
+                <Link
+                  href="/dashboard/subjects"
+                  className="hidden sm:flex items-center gap-1 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-300 hover:text-white transition"
+                  title="View Full Curriculum Catalogue"
+                >
+                  <span>Catalogue</span>
+                </Link>
+              )}
+            </div>
 
             <div>
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-md bg-blue-500/20 px-2 py-0.5 text-xs font-bold text-blue-300 border border-blue-500/30">
                   {subject.code}
                 </span>
@@ -718,34 +733,38 @@ Complete the workbook chapter review worksheet. Submit notebooks at the beginnin
               </h2>
 
               {/* Assigned Subject Teacher Control */}
-              <div className="flex items-center gap-2 mt-2">
+              <div className="flex flex-wrap items-center gap-2 mt-2">
                 <span className="text-[11px] font-bold text-slate-400">Subject Teacher:</span>
                 {assignedTeacher ? (
-                  <div className="flex items-center gap-1.5">
-                    <span className="rounded-md bg-emerald-500/20 px-2 py-0.5 text-xs font-semibold text-emerald-300 border border-emerald-500/30">
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    <span className="rounded-md bg-emerald-500/20 px-2.5 py-0.5 text-xs font-semibold text-emerald-300 border border-emerald-500/30">
                       {assignedTeacher.name} {assignedTeacher.staffNumber ? `(${assignedTeacher.staffNumber})` : ""}
                     </span>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedTeacherId(assignedTeacher.id);
-                        setIsTeacherModalOpen(true);
-                      }}
-                      className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300 hover:text-white"
-                      title="Change Assigned Teacher"
-                    >
-                      Change
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleUnassignTeacher}
-                      className="rounded-md bg-rose-950/40 border border-rose-800/40 px-2 py-0.5 text-[10px] font-bold text-rose-300 hover:bg-rose-900/60"
-                      title="Unassign Teacher"
-                    >
-                      Unassign
-                    </button>
+                    {isSuperAdmin && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedTeacherId(assignedTeacher.id);
+                            setIsTeacherModalOpen(true);
+                          }}
+                          className="rounded-md bg-slate-800 px-2 py-0.5 text-[10px] font-bold text-slate-300 hover:text-white"
+                          title="Change Assigned Teacher"
+                        >
+                          Change
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleUnassignTeacher}
+                          className="rounded-md bg-rose-950/40 border border-rose-800/40 px-2 py-0.5 text-[10px] font-bold text-rose-300 hover:bg-rose-900/60"
+                          title="Unassign Teacher"
+                        >
+                          Unassign
+                        </button>
+                      </>
+                    )}
                   </div>
-                ) : (
+                ) : isSuperAdmin ? (
                   <button
                     type="button"
                     onClick={() => {
@@ -756,13 +775,15 @@ Complete the workbook chapter review worksheet. Submit notebooks at the beginnin
                   >
                     + Assign Subject Teacher
                   </button>
+                ) : (
+                  <span className="text-xs text-slate-400 italic">No instructor designated</span>
                 )}
               </div>
             </div>
           </div>
 
           <div className="flex items-center gap-3">
-            <div className="text-right">
+            <div className="text-left sm:text-right">
               <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block">
                 Class Enrolment
               </span>
@@ -786,72 +807,78 @@ Complete the workbook chapter review worksheet. Submit notebooks at the beginnin
                     It will not appear on student assessment score sheets or terminal report cards until its combination is attached to a class.
                   </p>
                 </div>
-                <div className="flex flex-wrap gap-2 pt-1">
-                  <Link
-                    href="/dashboard/subjects?tab=combinations"
-                    className="rounded-xl bg-teal-500 px-3.5 py-1.5 text-xs font-bold text-slate-950 hover:bg-teal-400 transition"
-                  >
-                    Go to Subject Combinations
-                  </Link>
-                  <Link
-                    href="/dashboard/classes?tab=combinations"
-                    className="rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition"
-                  >
-                    Attach Combination to Class
-                  </Link>
-                </div>
+                {isSuperAdmin ? (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <Link
+                      href="/dashboard/subjects?tab=combinations"
+                      className="rounded-xl bg-teal-500 px-3.5 py-1.5 text-xs font-bold text-slate-950 hover:bg-teal-400 transition"
+                    >
+                      Go to Subject Combinations
+                    </Link>
+                    <Link
+                      href="/dashboard/classes?tab=combinations"
+                      className="rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-slate-200 hover:bg-slate-800 transition"
+                    >
+                      Attach Combination to Class
+                    </Link>
+                  </div>
+                ) : (
+                  <p className="text-xs text-amber-300/80 italic pt-1">
+                    Please contact the academic administration to attach this subject to an active class curriculum.
+                  </p>
+                )}
               </div>
             </div>
           </div>
         )}
 
-        {/* 4 Pillars Navigation Bar */}
-        <div className="mt-4 flex flex-wrap items-center gap-2">
+        {/* 4 Pillars Navigation Bar with Smooth Mobile Horizontal Scrolling */}
+        <div className="mt-4 flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none sm:flex-wrap">
           <button
             onClick={() => setActiveTab("scheme")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition ${
+            className={`shrink-0 flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-xs font-bold transition shadow-xs ${
               activeTab === "scheme"
-                ? "bg-[#dfba73] text-slate-950 shadow-md"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
+                ? "bg-[#dfba73] text-slate-950 shadow-md ring-2 ring-amber-300/40"
+                : "bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-900"
             }`}
           >
-            <Layers className="h-4 w-4" />
+            <Layers className="h-4 w-4 shrink-0" />
             <span>1. Scheme of Work (12 Weeks)</span>
           </button>
 
           <button
             onClick={() => setActiveTab("notes")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition ${
+            className={`shrink-0 flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-xs font-bold transition shadow-xs ${
               activeTab === "notes"
-                ? "bg-[#dfba73] text-slate-950 shadow-md"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
+                ? "bg-[#dfba73] text-slate-950 shadow-md ring-2 ring-amber-300/40"
+                : "bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-900"
             }`}
           >
-            <BookOpen className="h-4 w-4" />
+            <BookOpen className="h-4 w-4 shrink-0" />
             <span>2. Lesson Notes</span>
           </button>
 
           <button
             onClick={() => setActiveTab("plans")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition ${
+            className={`shrink-0 flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-xs font-bold transition shadow-xs ${
               activeTab === "plans"
-                ? "bg-[#dfba73] text-slate-950 shadow-md"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
+                ? "bg-[#dfba73] text-slate-950 shadow-md ring-2 ring-amber-300/40"
+                : "bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-900"
             }`}
           >
-            <FileText className="h-4 w-4" />
+            <FileText className="h-4 w-4 shrink-0" />
             <span>3. Lesson Plans</span>
           </button>
 
           <button
             onClick={() => setActiveTab("scores")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition ${
+            className={`shrink-0 flex items-center gap-2 rounded-xl px-3.5 py-2.5 text-xs font-bold transition shadow-xs ${
               activeTab === "scores"
-                ? "bg-[#dfba73] text-slate-950 shadow-md"
-                : "text-slate-400 hover:text-white hover:bg-slate-800"
+                ? "bg-[#dfba73] text-slate-950 shadow-md ring-2 ring-amber-300/40"
+                : "bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-900"
             }`}
           >
-            <FileSpreadsheet className="h-4 w-4" />
+            <FileSpreadsheet className="h-4 w-4 shrink-0" />
             <span>4. Scores Upload & Continuous Assessment</span>
           </button>
         </div>
@@ -1504,8 +1531,8 @@ Complete the workbook chapter review worksheet. Submit notebooks at the beginnin
             </div>
 
             {/* Direct Editable Scoresheet Table */}
-            <div className="overflow-x-auto rounded-2xl border-2 border-[#092233] bg-white shadow-xs relative z-10">
-              <table className="w-full text-left text-xs">
+            <div className="overflow-x-auto rounded-2xl border-2 border-[#092233] bg-white shadow-xs relative z-10 scrollbar-thin">
+              <table className="w-full min-w-[720px] text-left text-xs">
                 <thead className="bg-[#092233] text-amber-100 uppercase tracking-wider text-[10px] font-bold border-b border-[#c5a059]">
                   <tr>
                     <th className="p-3 w-8 text-center text-amber-300">#</th>

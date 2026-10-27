@@ -1,5 +1,8 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, ShieldAlert } from "lucide-react";
 import { sqlClient } from "@/db";
+import { getSession } from "@/lib/auth/session";
 import { ClassroomManagementClient } from "@/features/dashboard/components/classroom-management-client";
 import { resolveAcademicContext } from "@/features/academic/lib/context";
 
@@ -10,6 +13,10 @@ export default async function ClassCockpitPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const session = await getSession();
+  if (!session) redirect("/login");
+
+  const isAdmin = session.role === "superadmin" || session.role === "admin";
   const { id } = await params;
   const query = await searchParams;
   const initialTab = typeof query.tab === "string" ? query.tab : "roster";
@@ -69,6 +76,56 @@ export default async function ClassCockpitPage({
   }
 
   const classItem = classResult[0];
+
+  // Authorization Check: Non-admins must be assigned as class teacher or subject teacher in this class
+  if (!isAdmin) {
+    const classAssignment = await sqlClient.query(`
+      SELECT 1 FROM teacher_class_assignments tca
+      JOIN teachers t ON t.id = tca.teacher_id
+      JOIN staff s ON s.id = t.staff_id
+      JOIN people p ON p.id = s.person_id
+      JOIN users u ON u.person_id = p.id
+      WHERE u.id = $1 AND tca.class_id = $2 AND tca.status = 'active'
+      UNION
+      SELECT 1 FROM teacher_subject_assignments tsa
+      JOIN teachers t ON t.id = tsa.teacher_id
+      JOIN staff s ON s.id = t.staff_id
+      JOIN people p ON p.id = s.person_id
+      JOIN users u ON u.person_id = p.id
+      WHERE u.id = $1 AND tsa.class_id = $2 AND tsa.status = 'active'
+      LIMIT 1
+    `, [session.userId, id]);
+
+    if (classAssignment.length === 0) {
+      return (
+        <div className="flex min-h-[60vh] flex-col items-center justify-center p-4 text-center salamah-enter">
+          <div className="w-full max-w-md rounded-3xl border border-rose-500/30 bg-[#092233] p-6 sm:p-8 shadow-2xl">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/15 text-rose-400 border border-rose-500/30 mb-4">
+              <ShieldAlert className="h-7 w-7" />
+            </div>
+            <span className="rounded-full bg-rose-500/15 border border-rose-500/30 px-3 py-0.5 text-[10px] font-bold text-rose-300 uppercase tracking-wider">
+              Classroom Cockpit Restricted
+            </span>
+            <h2 className="mt-3 font-serif text-2xl font-bold text-white">
+              Access Restricted
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
+              You are not assigned to manage <strong className="text-white">{classItem.name}</strong> as a Form Master or Subject Teacher. Classroom cockpits are reserved for assigned pastoral leads and school administrators.
+            </p>
+            <div className="mt-6">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#c5a059] to-[#dfba73] px-5 py-2.5 text-xs font-bold text-slate-950 shadow-md hover:from-amber-400 hover:to-amber-500 transition"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Return to My Staff Dashboard</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  }
 
   // 2. Fetch Class Subjects strictly from assigned Subject Combinations
   const subjects = await sqlClient.query(`
@@ -303,6 +360,7 @@ export default async function ClassCockpitPage({
         sectionHeads={sectionHeads as any}
         initialTab={initialTab}
         quickEnrollmentEnabled={quickEnrollmentEnabled}
+        isSuperAdmin={isAdmin}
       />
     </div>
   );

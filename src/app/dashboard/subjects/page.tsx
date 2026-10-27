@@ -1,4 +1,6 @@
+import { redirect } from "next/navigation";
 import { sqlClient } from "@/db";
+import { getSession } from "@/lib/auth/session";
 import {
   SubjectsClient,
   type SubjectItem,
@@ -10,6 +12,12 @@ export default async function SubjectsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const session = await getSession();
+  if (!session) redirect("/login");
+  if (session.role !== "superadmin" && session.role !== "admin") {
+    redirect("/dashboard");
+  }
+
   const query = await searchParams;
   const initialTab = typeof query.tab === "string" ? query.tab : "catalogue";
 

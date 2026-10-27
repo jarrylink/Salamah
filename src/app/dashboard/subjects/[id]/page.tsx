@@ -1,5 +1,8 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
+import Link from "next/link";
+import { ArrowLeft, ShieldAlert } from "lucide-react";
 import { sqlClient } from "@/db";
+import { getSession } from "@/lib/auth/session";
 import { SubjectTeachingCockpit } from "@/features/dashboard/components/subject-teaching-cockpit";
 import { resolveAcademicContext } from "@/features/academic/lib/context";
 
@@ -10,6 +13,10 @@ export default async function SubjectCockpitPage({
   params: Promise<{ id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  const session = await getSession();
+  if (!session) redirect("/login");
+
+  const isAdmin = session.role === "superadmin" || session.role === "admin";
   const { id } = await params;
   const query = await searchParams;
   const initialTab = (typeof query.tab === "string" && ["scheme", "notes", "plans", "scores"].includes(query.tab))
@@ -36,6 +43,49 @@ export default async function SubjectCockpitPage({
     description: string | null;
     status: string;
   };
+
+  // Authorization Check: Non-admins must be assigned as an active teacher for this subject
+  let teacherAssignments: { id: string; class_id: string | null }[] = [];
+  if (!isAdmin) {
+    teacherAssignments = (await sqlClient.query(`
+      SELECT tsa.id, tsa.class_id
+      FROM teacher_subject_assignments tsa
+      JOIN teachers t ON t.id = tsa.teacher_id
+      JOIN staff stf ON stf.id = t.staff_id
+      JOIN users u ON u.person_id = stf.person_id
+      WHERE u.id = $1 AND tsa.subject_id = $2 AND tsa.status = 'active'
+    `, [session.userId, id])) as { id: string; class_id: string | null }[];
+
+    if (teacherAssignments.length === 0) {
+      return (
+        <div className="flex min-h-[60vh] flex-col items-center justify-center p-4 text-center salamah-enter">
+          <div className="w-full max-w-md rounded-3xl border border-rose-500/30 bg-[#092233] p-6 sm:p-8 shadow-2xl">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-rose-500/15 text-rose-400 border border-rose-500/30 mb-4">
+              <ShieldAlert className="h-7 w-7" />
+            </div>
+            <span className="rounded-full bg-rose-500/15 border border-rose-500/30 px-3 py-0.5 text-[10px] font-bold text-rose-300 uppercase tracking-wider">
+              Instructional Cockpit Restricted
+            </span>
+            <h2 className="mt-3 font-serif text-2xl font-bold text-white">
+              Access Restricted
+            </h2>
+            <p className="mt-2 text-xs sm:text-sm text-slate-300 leading-relaxed">
+              You are not assigned as the instructor for <strong className="text-white">{subjectData.name} ({subjectData.code})</strong>. Instructional cockpits are restricted strictly to assigned teachers and school administration.
+            </p>
+            <div className="mt-6">
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-[#c5a059] to-[#dfba73] px-5 py-2.5 text-xs font-bold text-slate-950 shadow-md hover:from-amber-400 hover:to-amber-500 transition"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Return to My Staff Dashboard</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      );
+    }
+  }
 
   // 2. Resolve Global Academic Context
   const academicContext = await resolveAcademicContext({
@@ -108,12 +158,18 @@ export default async function SubjectCockpitPage({
     ORDER BY g.sort_order, c.name
   `, [id])) as { id: string; name: string; code: string; grade_name: string; student_count: number }[];
 
+  // If teacher is assigned only to specific class stream(s), restrict available classes accordingly
+  const assignedClassIds = new Set(teacherAssignments.map((a) => a.class_id).filter(Boolean) as string[]);
+  const relevantClasses = (!isAdmin && assignedClassIds.size > 0)
+    ? classes.filter((c) => assignedClassIds.has(c.id))
+    : classes;
+
   // Determine selected class
   const selectedClassId =
     (typeof query.classId === "string" ? query.classId : null) ||
-    classes[0]?.id ||
+    relevantClasses[0]?.id ||
     "";
-  const selectedClass = classes.find((c) => c.id === selectedClassId) || classes[0] || null;
+  const selectedClass = relevantClasses.find((c) => c.id === selectedClassId) || relevantClasses[0] || null;
 
   // 3b. Fetch Subject Teachers & All Teachers for flexible assignment
   const subjectTeachers = (await sqlClient.query(`
@@ -296,7 +352,7 @@ export default async function SubjectCockpitPage({
         staffNumber: currentAssignedTeacher.staff_number,
       } : null}
       teachers={allTeachers}
-      availableClasses={classes.map((c) => ({
+      availableClasses={relevantClasses.map((c) => ({
         id: c.id,
         name: `${c.grade_name ? `${c.grade_name} ` : ""}${c.name}`,
         code: c.code,
@@ -305,6 +361,7 @@ export default async function SubjectCockpitPage({
       currentSession={finalSession}
       currentTerm={finalTerm}
       initialTab={initialTab}
+      isSuperAdmin={isAdmin}
     />
   );
 }

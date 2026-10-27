@@ -150,6 +150,7 @@ export function ClassroomManagementClient({
   sectionHeads = [],
   initialTab,
   quickEnrollmentEnabled = true,
+  isSuperAdmin = false,
 }: {
   classItem: {
     id: string;
@@ -177,6 +178,7 @@ export function ClassroomManagementClient({
   sectionHeads?: any[];
   initialTab: string;
   quickEnrollmentEnabled?: boolean;
+  isSuperAdmin?: boolean;
 }) {
   const [activeTab, setActiveTab] = useState<"roster" | "attendance" | "mastersheet" | "report-card" | "comments">(
     initialTab === "attendance"
@@ -844,20 +846,33 @@ export function ClassroomManagementClient({
       {/* CLASSROOM COCKPIT HERO HEADER */}
       <div className="rounded-3xl border border-[#dfba73]/30 bg-[#092233] p-6 shadow-xl">
         <div className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <Link
-              href="/dashboard/classes"
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-slate-900 border border-slate-700 text-slate-300 hover:text-white transition"
-              title="Return to Classes Catalogue"
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Link>
-
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500/30 to-[#dfba73]/20 text-teal-300 font-bold text-xl border border-teal-500/40 shadow-inner">
-              <GraduationCap className="h-7 w-7" />
+          <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Link
+                href="/dashboard"
+                className="flex items-center gap-1.5 rounded-xl border border-[#dfba73]/40 bg-slate-950 px-3.5 py-2 text-xs font-bold text-[#dfba73] hover:text-white hover:border-[#dfba73] hover:bg-[#dfba73]/20 transition shadow-xs"
+                title="Return to Staff Dashboard"
+              >
+                <ArrowLeft className="h-4 w-4" />
+                <span>Back to Dashboard</span>
+              </Link>
+              {isSuperAdmin && (
+                <Link
+                  href="/dashboard/classes"
+                  className="hidden sm:flex items-center gap-1 rounded-xl border border-slate-700 bg-slate-900 px-3 py-2 text-xs font-semibold text-slate-300 hover:text-white transition"
+                  title="Return to Classes Catalogue"
+                >
+                  <span>Catalogue</span>
+                </Link>
+              )}
             </div>
 
-            <div>
+            <div className="flex items-center gap-3">
+              <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-teal-500/30 to-[#dfba73]/20 text-teal-300 font-bold text-xl border border-teal-500/40 shadow-inner shrink-0">
+                <GraduationCap className="h-6 w-6 sm:h-7 sm:w-7" />
+              </div>
+
+              <div>
               <div className="flex flex-wrap items-center gap-2">
                 <span className="rounded-full border border-teal-500/40 bg-teal-500/15 px-2.5 py-0.5 text-[10px] font-bold tracking-[0.16em] text-teal-300 uppercase">
                   Classroom Management Cockpit
@@ -895,6 +910,7 @@ export function ClassroomManagementClient({
               </div>
             </div>
           </div>
+        </div>
 
           <div className="flex flex-wrap items-center gap-2.5">
             <button
@@ -1557,9 +1573,9 @@ export function ClassroomManagementClient({
 
             <div className="flex flex-wrap items-center gap-2.5">
               <Link
-                href="/dashboard/subjects"
+                href={isSuperAdmin ? "/dashboard/subjects" : "/dashboard"}
                 className="flex items-center gap-1.5 rounded-xl border border-teal-500/40 bg-teal-500/10 px-3.5 py-2 text-xs font-bold text-teal-300 hover:bg-teal-500 hover:text-slate-950 transition shadow-sm"
-                title="Enter or update scores in the Subject Teaching Cockpit"
+                title="Enter or update scores in your assigned Subject Teaching Cockpit"
               >
                 <BookOpen className="h-3.5 w-3.5" />
                 <span>Subject Teaching Cockpit</span>

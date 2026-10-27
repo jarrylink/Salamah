@@ -302,12 +302,12 @@ export function StaffDashboardClient({
           </div>
         </div>
 
-        {/* Primary Workspace Navigation Tabs */}
-        <div className="mt-6 flex flex-wrap items-center gap-2 border-t border-slate-800/80 pt-4">
+        {/* Primary Workspace Navigation Tabs with Mobile Horizontal Scrolling */}
+        <div className="mt-6 flex items-center gap-2 border-t border-slate-800/80 pt-4 overflow-x-auto pb-2 scrollbar-none sm:flex-wrap">
           <button
             type="button"
             onClick={() => setActiveTab("classes")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs ${
+            className={`shrink-0 flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs ${
               activeTab === "classes"
                 ? "bg-[#dfba73] text-slate-950 shadow-md ring-2 ring-amber-300/40"
                 : "bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-white hover:border-[#dfba73]/50"
@@ -325,7 +325,7 @@ export function StaffDashboardClient({
           <button
             type="button"
             onClick={() => setActiveTab("subjects")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs ${
+            className={`shrink-0 flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs ${
               activeTab === "subjects"
                 ? "bg-[#dfba73] text-slate-950 shadow-md ring-2 ring-amber-300/40"
                 : "bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-white hover:border-[#dfba73]/50"
@@ -343,7 +343,7 @@ export function StaffDashboardClient({
           <button
             type="button"
             onClick={() => setActiveTab("noticeboard")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs ${
+            className={`shrink-0 flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs ${
               activeTab === "noticeboard"
                 ? "bg-[#dfba73] text-slate-950 shadow-md ring-2 ring-amber-300/40"
                 : "bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-white hover:border-[#dfba73]/50"
@@ -363,7 +363,7 @@ export function StaffDashboardClient({
           <button
             type="button"
             onClick={() => setActiveTab("tasks")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs ${
+            className={`shrink-0 flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs ${
               activeTab === "tasks"
                 ? "bg-[#dfba73] text-slate-950 shadow-md ring-2 ring-amber-300/40"
                 : "bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-white hover:border-[#dfba73]/50"
@@ -376,7 +376,7 @@ export function StaffDashboardClient({
           <button
             type="button"
             onClick={() => setActiveTab("profile")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs ${
+            className={`shrink-0 flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs ${
               activeTab === "profile"
                 ? "bg-[#dfba73] text-slate-950 shadow-md ring-2 ring-amber-300/40"
                 : "bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-white hover:border-[#dfba73]/50"
@@ -389,7 +389,7 @@ export function StaffDashboardClient({
           <button
             type="button"
             onClick={() => setActiveTab("documents")}
-            className={`flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs ${
+            className={`shrink-0 flex items-center gap-2 rounded-xl px-4 py-2.5 text-xs font-bold transition shadow-xs ${
               activeTab === "documents"
                 ? "bg-[#dfba73] text-slate-950 shadow-md ring-2 ring-amber-300/40"
                 : "bg-slate-950/80 border border-slate-800 text-slate-300 hover:text-white hover:border-[#dfba73]/50"
