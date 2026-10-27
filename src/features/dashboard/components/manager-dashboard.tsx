@@ -102,20 +102,20 @@ export async function ManagerDashboard({ userId }: { userId: string }) {
   `, [userId]);
 
   return (
-    <div className="min-h-screen bg-[#061824] text-slate-100">
+    <div className="min-h-screen bg-[#061824] text-slate-100 antialiased selection:bg-teal-500/30">
       {/* Top Bar */}
-      <header className="border-b border-slate-800 bg-[#04141e]/90 px-6 py-4 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-[#04141e]/95 px-4 sm:px-6 lg:px-8 py-3.5 backdrop-blur-md shadow-xs">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="grid h-10 w-10 place-items-center rounded-xl bg-teal-500 text-slate-950 font-bold">
               SIS
             </div>
             <div>
-              <h1 className="font-display text-lg font-bold text-white">
+              <h1 className="font-display text-lg font-bold text-white tracking-tight">
                 Salamah International School
               </h1>
               <p className="text-[10px] font-bold tracking-[0.2em] text-teal-400 uppercase">
-                Operations & Manager Workspace
+                Operations &amp; Manager Workspace
               </p>
             </div>
           </div>
@@ -130,7 +130,7 @@ export async function ManagerDashboard({ userId }: { userId: string }) {
             <form action="/api/auth/logout" method="post">
               <button
                 type="submit"
-                className="flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-950/20 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-900/40"
+                className="flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-950/20 px-3.5 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-900/40 transition cursor-pointer"
               >
                 <LogOut className="h-3.5 w-3.5" />
                 <span>Sign Out</span>
@@ -141,7 +141,7 @@ export async function ManagerDashboard({ userId }: { userId: string }) {
       </header>
 
       {/* Main Content */}
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         {/* Welcome Banner */}
         <div className="rounded-3xl border border-teal-500/30 bg-gradient-to-r from-teal-950/60 via-slate-900 to-[#082232] p-6 shadow-xl sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-4">

@@ -916,8 +916,13 @@ export function StudentFileClient({
 
       {/* MODAL: ADD ACTIVITY / FILE ENTRY */}
       {isActivityModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl border border-[#dfba73]/50 bg-[#092233] p-6 shadow-2xl">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsActivityModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto w-full max-w-lg rounded-3xl border border-[#dfba73]/50 bg-[#092233] p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#dfba73]">
@@ -928,8 +933,10 @@ export function StudentFileClient({
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setIsActivityModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -1101,8 +1108,13 @@ export function StudentFileClient({
 
       {/* MODAL: ADD TEACHER CLASSROOM COMMENT */}
       {isCommentModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-3xl border border-teal-500/50 bg-[#092233] p-6 shadow-2xl">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsCommentModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto w-full max-w-md rounded-3xl border border-teal-500/50 bg-[#092233] p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400">
@@ -1113,8 +1125,10 @@ export function StudentFileClient({
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setIsCommentModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>

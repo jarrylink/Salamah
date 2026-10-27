@@ -2409,9 +2409,14 @@ export function ClassroomManagementClient({
 
       {/* MODAL: ADD STUDENT TO CLASS */}
       {isAddStudentModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-xl max-h-[92vh] overflow-y-auto rounded-3xl border border-teal-500/50 bg-[#092233] p-6 shadow-2xl">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsAddStudentModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-xl flex-col rounded-3xl border border-teal-500/50 bg-[#092233] shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between p-5 border-b border-slate-800 shrink-0 bg-[#071d2b]">
               <div>
                 <span className="rounded-full bg-teal-500/20 border border-teal-500/40 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-teal-300">
                   Classroom Student Intake
@@ -2421,15 +2426,18 @@ export function ClassroomManagementClient({
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setIsAddStudentModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            {/* Mode Switcher */}
-            <div className="mt-4 flex rounded-2xl bg-slate-950 p-1 border border-slate-800">
+            <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 salamah-scrollbar">
+              {/* Mode Switcher */}
+              <div className="flex rounded-2xl bg-slate-950 p-1 border border-slate-800">
               <button
                 type="button"
                 onClick={() => setAddStudentMode("manual")}
@@ -2794,28 +2802,34 @@ export function ClassroomManagementClient({
                   <button
                     type="button"
                     onClick={() => setIsAddStudentModalOpen(false)}
-                    className="rounded-xl border border-slate-700 px-4 py-2 text-xs font-bold text-slate-300 hover:text-white"
+                    className="rounded-xl border border-slate-700 px-4 py-2 text-xs font-bold text-slate-300 hover:text-white transition cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
                     disabled={isSubmittingAddStudent || !selectedStudentToAdd}
-                    className="rounded-xl bg-teal-500 px-5 py-2 text-xs font-bold text-slate-950 hover:bg-teal-400 disabled:opacity-50 transition shadow-md"
+                    className="rounded-xl bg-teal-500 px-5 py-2 text-xs font-bold text-slate-950 hover:bg-teal-400 disabled:opacity-50 transition shadow-md cursor-pointer"
                   >
                     {isSubmittingAddStudent ? "Enrolling..." : "Transfer / Enroll to Class"}
                   </button>
                 </div>
               </form>
             )}
+            </div>
           </div>
         </div>
       )}
 
       {/* MODAL: QUICK TEACHER COMMENT */}
       {isCommentModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-3xl border border-[#dfba73]/50 bg-[#092233] p-6 shadow-2xl">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsCommentModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto w-full max-w-md rounded-3xl border border-[#dfba73]/50 bg-[#092233] p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#dfba73]">
@@ -2826,8 +2840,10 @@ export function ClassroomManagementClient({
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setIsCommentModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -2922,26 +2938,33 @@ export function ClassroomManagementClient({
 
       {/* MODAL: SUBJECT SCORE ENTRY */}
       {isScoreModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border border-teal-500/50 bg-[#092233] p-6 shadow-2xl">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsScoreModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-2xl flex-col rounded-3xl border border-teal-500/50 bg-[#092233] shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between p-5 border-b border-slate-800 shrink-0 bg-[#071d2b]">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400">
-                  Continuous Assessment & Examination
+                  Continuous Assessment &amp; Examination
                 </span>
                 <h3 className="font-display text-lg font-bold text-white">
                   Enter Subject Scores for {classItem.name}
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setIsScoreModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveScores} className="mt-4 space-y-4">
+            <form onSubmit={handleSaveScores} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 salamah-scrollbar">
               <div>
                 <label className="block text-xs font-semibold text-slate-300 mb-1">
                   Subject *
@@ -3081,10 +3104,19 @@ export function ClassroomManagementClient({
       )}
       {/* MODAL: SCORESHEET UPLOAD (3 CAs, EXAM, TOTAL) */}
       {isScoresheetUploadModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-4xl max-h-[92vh] flex flex-col rounded-3xl border border-[#dfba73]/50 bg-[#092233] shadow-2xl overflow-hidden">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) {
+              setIsScoresheetUploadModalOpen(false);
+              setParsedScoresheetData([]);
+              setUploadRawText("");
+            }
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-4xl flex-col rounded-3xl border border-[#dfba73]/50 bg-[#092233] shadow-2xl overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between p-6 border-b border-slate-800 bg-slate-950/60">
+            <div className="flex items-center justify-between p-6 border-b border-slate-800 bg-slate-950/60 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="rounded-xl bg-[#dfba73]/10 border border-[#dfba73]/30 p-2.5 text-[#dfba73]">
                   <FileSpreadsheet className="h-6 w-6" />
@@ -3102,12 +3134,14 @@ export function ClassroomManagementClient({
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => {
                   setIsScoresheetUploadModalOpen(false);
                   setParsedScoresheetData([]);
                   setUploadRawText("");
                 }}
-                className="text-slate-400 hover:text-white rounded-lg p-1.5 hover:bg-slate-800 transition"
+                className="text-slate-400 hover:text-white rounded-lg p-1.5 hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>

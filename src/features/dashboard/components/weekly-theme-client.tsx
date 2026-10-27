@@ -348,24 +348,31 @@ export function WeeklyThemeClient({
       {/* MODAL: CREATE OR EDIT THEME */}
       {/* ======================================================== */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="w-full max-w-xl rounded-2xl border border-[#dfba73]/40 bg-[#061b29] p-6 shadow-2xl my-8">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-xl flex-col rounded-2xl border border-[#dfba73]/40 bg-[#061b29] shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between border-b border-slate-800 p-5 shrink-0 bg-[#04141e]">
               <div>
                 <h3 className="font-serif text-lg font-bold text-white">
                   {editingTheme ? `Edit Theme · Week ${weekNumber}` : "Create Weekly School Theme"}
                 </h3>
-                <p className="text-xs text-[#dfba73]">Moral Philosophy & Devotional Direction</p>
+                <p className="text-xs text-[#dfba73]">Moral Philosophy &amp; Devotional Direction</p>
               </div>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+            <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 salamah-scrollbar">
               <div className="grid grid-cols-1 sm:grid-cols-4 gap-3">
                 <div>
                   <label className="block text-xs font-semibold text-slate-300 mb-1">Week Number *</label>
@@ -444,18 +451,18 @@ export function WeeklyThemeClient({
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsModalOpen(false)}
-                  className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+                  className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="rounded-xl bg-[#dfba73] px-4 py-2 text-xs font-bold text-slate-950 hover:bg-[#c5a059] transition shadow-md"
+                  className="rounded-xl bg-[#dfba73] px-4 py-2 text-xs font-bold text-slate-950 hover:bg-[#c5a059] transition shadow-md cursor-pointer"
                 >
                   {isSubmitting ? "Saving..." : editingTheme ? "Update Theme" : "Create Theme"}
                 </button>

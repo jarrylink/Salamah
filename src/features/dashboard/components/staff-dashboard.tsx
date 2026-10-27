@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
+import { brand } from "@/config/brand";
 import {
   Award,
   Bell,
@@ -241,17 +243,86 @@ export function StaffDashboardClient({
   // If a subject is selected for embedded cockpit mode
   if (selectedSubjectId && selectedSubjectObj) {
     return (
-      <SubjectTeachingCockpit
-        subject={selectedSubjectObj}
-        onBack={() => setSelectedSubjectId(null)}
-      />
+      <div className="min-h-screen bg-[#061824] text-slate-100 antialiased selection:bg-teal-500/30">
+        <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-[#04141e]/95 px-4 sm:px-6 lg:px-8 py-3.5 backdrop-blur-md shadow-xs">
+          <div className="mx-auto flex max-w-7xl items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="relative h-10 w-10 shrink-0 flex items-center justify-center">
+                <Image src={brand.assets.logo} alt="Salamah" width={40} height={40} className="h-full w-auto object-contain" />
+              </div>
+              <div>
+                <h1 className="font-display text-lg font-bold text-white tracking-tight">
+                  Salamah International School
+                </h1>
+                <p className="text-[10px] font-bold tracking-[0.2em] text-[#dfba73] uppercase">
+                  Subject Teaching Cockpit
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => setSelectedSubjectId(null)}
+              className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-slate-300 hover:text-white hover:border-[#dfba73] transition cursor-pointer"
+            >
+              <ChevronRight className="h-3.5 w-3.5 rotate-180" />
+              <span>Back to Staff Portal</span>
+            </button>
+          </div>
+        </header>
+        <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+          <SubjectTeachingCockpit
+            subject={selectedSubjectObj}
+            onBack={() => setSelectedSubjectId(null)}
+          />
+        </main>
+      </div>
     );
   }
 
   return (
-    <div className="space-y-6 salamah-enter">
-      {/* Top Hero Banner */}
-      <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-br from-[#092233] via-[#041a29] to-[#020d18] p-6 sm:p-8 shadow-2xl">
+    <div className="min-h-screen bg-[#061824] text-slate-100 antialiased selection:bg-teal-500/30">
+      {/* Institutional Top Header */}
+      <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-[#04141e]/95 px-4 sm:px-6 lg:px-8 py-3.5 backdrop-blur-md shadow-xs">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <div className="flex items-center gap-3">
+            <div className="relative h-10 w-10 shrink-0 flex items-center justify-center">
+              <Image src={brand.assets.logo} alt="Salamah" width={40} height={40} className="h-full w-auto object-contain" />
+            </div>
+            <div>
+              <h1 className="font-display text-lg font-bold text-white tracking-tight">
+                Salamah International School
+              </h1>
+              <p className="text-[10px] font-bold tracking-[0.2em] text-[#dfba73] uppercase">
+                Faculty &amp; Academic Staff Cockpit
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <div className="hidden text-right sm:block">
+              <p className="text-xs font-semibold text-white">
+                {staff.firstName} {staff.lastName}
+              </p>
+              <p className="text-[11px] text-[#dfba73]">
+                {staff.designation || "Faculty Member"} • {staff.department || "Academic"}
+              </p>
+            </div>
+            <form action="/api/auth/logout" method="post">
+              <button
+                type="submit"
+                className="flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-950/20 px-3.5 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-900/40 transition cursor-pointer"
+              >
+                <LogOut className="h-3.5 w-3.5" />
+                <span>Sign Out</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </header>
+
+      {/* Main Container with generous margins */}
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+        {/* Top Hero Banner */}
+        <div className="relative overflow-hidden rounded-3xl border border-slate-800 bg-gradient-to-br from-[#092233] via-[#041a29] to-[#020d18] p-6 sm:p-8 shadow-2xl">
         <div className="relative z-10 flex flex-wrap items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="relative h-16 w-16 sm:h-20 sm:w-20 shrink-0 overflow-hidden rounded-2xl border-2 border-[#dfba73] bg-slate-950 shadow-md">
@@ -1060,18 +1131,23 @@ export function StaffDashboardClient({
       {/* MODAL 1: EMPLOYMENT AGREEMENT DOCUMENT VIEWER            */}
       {/* ======================================================== */}
       {isAgreementModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-3xl max-h-[92vh] overflow-y-auto rounded-3xl border border-teal-500/50 bg-white text-slate-900 p-8 shadow-2xl space-y-6">
-            <div className="flex items-center justify-between border-b pb-4">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsAgreementModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-3xl flex-col rounded-3xl border border-teal-500/50 bg-white text-slate-900 shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between border-b pb-4 p-6 shrink-0 bg-slate-50">
               <div className="flex items-center gap-3">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src="https://res.cloudinary.com/djkudkxmx/image/upload/v1781003815/salamah_fav_icon_jxar2b.png"
                   alt="Salamah Crest"
-                  className="h-14 w-14 object-contain"
+                  className="h-12 w-12 object-contain"
                 />
                 <div>
-                  <h2 className="font-serif text-xl font-bold uppercase text-[#092233]">
+                  <h2 className="font-serif text-lg sm:text-xl font-bold uppercase text-[#092233]">
                     Salamah International School · Katsina
                   </h2>
                   <p className="text-[10px] uppercase font-bold text-[#8c6b2d] tracking-wider">
@@ -1083,13 +1159,14 @@ export function StaffDashboardClient({
               <button
                 type="button"
                 onClick={() => setIsAgreementModalOpen(false)}
-                className="text-slate-400 hover:text-slate-900"
+                className="rounded-lg p-1.5 text-slate-400 hover:text-slate-900 hover:bg-slate-200 transition cursor-pointer"
+                aria-label="Close modal"
               >
-                <X className="h-6 w-6" />
+                <X className="h-5 w-5" />
               </button>
             </div>
 
-            <div className="text-xs space-y-4 leading-relaxed text-slate-800">
+            <div className="text-xs space-y-4 leading-relaxed text-slate-800 p-6 overflow-y-auto flex-1 salamah-scrollbar">
               <div className="bg-amber-50 p-4 rounded-xl border border-amber-200">
                 <span className="font-bold text-[#092233] block">APPOINTEE DETAILS:</span>
                 <p className="mt-1">
@@ -1139,11 +1216,11 @@ export function StaffDashboardClient({
               </div>
             </div>
 
-            <div className="flex justify-end gap-2 pt-4 border-t">
+            <div className="flex justify-end gap-2 p-4 border-t shrink-0 bg-slate-50">
               <button
                 type="button"
                 onClick={() => window.print()}
-                className="flex items-center gap-1.5 rounded-xl bg-[#092233] px-4 py-2 text-xs font-bold text-white hover:bg-[#061826]"
+                className="flex items-center gap-1.5 rounded-xl bg-[#092233] px-4 py-2 text-xs font-bold text-white hover:bg-[#061826] transition cursor-pointer"
               >
                 <Printer className="h-4 w-4 text-[#dfba73]" />
                 <span>Print Agreement</span>
@@ -1157,13 +1234,23 @@ export function StaffDashboardClient({
       {/* MODAL 2: STAFF ID CARD VIEWER                            */}
       {/* ======================================================== */}
       {isIdCardModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-sm rounded-3xl border-2 border-[#dfba73] bg-gradient-to-b from-[#092233] via-[#041a29] to-[#020b14] p-6 text-white shadow-2xl space-y-4">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsIdCardModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto w-full max-w-sm rounded-3xl border-2 border-[#dfba73] bg-gradient-to-b from-[#092233] via-[#041a29] to-[#020b14] p-6 text-white shadow-2xl space-y-4">
             <div className="flex justify-between items-center border-b border-slate-800 pb-3">
               <span className="text-[10px] font-bold uppercase tracking-widest text-[#dfba73]">
                 Official Staff Credential
               </span>
-              <button type="button" onClick={() => setIsIdCardModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button
+                type="button"
+                onClick={() => setIsIdCardModalOpen(false)}
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -1225,8 +1312,13 @@ export function StaffDashboardClient({
       {/* MODAL 3: GENERIC DOSSIER DOCUMENT VIEWER                 */}
       {/* ======================================================== */}
       {activeViewerDoc && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-lg rounded-3xl border border-teal-500/40 bg-[#092233] p-6 text-white shadow-2xl space-y-4">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setActiveViewerDoc(null);
+          }}
+        >
+          <div className="relative my-auto w-full max-w-lg rounded-3xl border border-teal-500/40 bg-[#092233] p-6 text-white shadow-2xl space-y-4">
             <div className="flex justify-between items-center border-b border-slate-800 pb-3">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-teal-300">
@@ -1236,7 +1328,12 @@ export function StaffDashboardClient({
                   {activeViewerDoc.title}
                 </h3>
               </div>
-              <button type="button" onClick={() => setActiveViewerDoc(null)} className="text-slate-400 hover:text-white">
+              <button
+                type="button"
+                onClick={() => setActiveViewerDoc(null)}
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -1260,7 +1357,7 @@ export function StaffDashboardClient({
                 href={activeViewerDoc.fileUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center gap-1.5 rounded-xl bg-teal-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-teal-400"
+                className="flex items-center gap-1.5 rounded-xl bg-teal-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-teal-400 transition"
               >
                 <Download className="h-4 w-4" />
                 <span>Open / Download Document</span>
@@ -1269,6 +1366,7 @@ export function StaffDashboardClient({
           </div>
         </div>
       )}
+      </main>
     </div>
   );
 }

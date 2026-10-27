@@ -341,27 +341,53 @@ export default async function ClassCockpitPage({
   const allTerms = await sqlClient.query("SELECT id, session_id, name, term_number, is_current FROM academic_terms ORDER BY term_number ASC");
   const sectionHeads = await sqlClient.query("SELECT * FROM school_section_heads");
 
+  const classroomNode = (
+    <ClassroomManagementClient
+      classItem={classItem as any}
+      subjects={subjects as any}
+      enrolledStudents={enrolledStudents as any}
+      availableStudents={availableStudents as any}
+      allClasses={allClasses as any}
+      attendanceRecords={attendanceRecords as any}
+      assessmentScores={assessmentScores as any}
+      comments={comments as any}
+      terminalReports={terminalReports as any}
+      currentSession={currentSession || { id: "default", name: "2026/2027" }}
+      currentTerm={currentTerm || { id: "default", name: "First Term", term_number: 1 }}
+      allSessions={allSessions as any}
+      allTerms={allTerms as any}
+      sectionHeads={sectionHeads as any}
+      initialTab={initialTab}
+      quickEnrollmentEnabled={quickEnrollmentEnabled}
+      isSuperAdmin={isAdmin}
+    />
+  );
+
+  if (isAdmin) {
+    return <div className="space-y-6 salamah-enter">{classroomNode}</div>;
+  }
+
   return (
-    <div className="space-y-6 salamah-enter">
-      <ClassroomManagementClient
-        classItem={classItem as any}
-        subjects={subjects as any}
-        enrolledStudents={enrolledStudents as any}
-        availableStudents={availableStudents as any}
-        allClasses={allClasses as any}
-        attendanceRecords={attendanceRecords as any}
-        assessmentScores={assessmentScores as any}
-        comments={comments as any}
-        terminalReports={terminalReports as any}
-        currentSession={currentSession || { id: "default", name: "2026/2027" }}
-        currentTerm={currentTerm || { id: "default", name: "First Term", term_number: 1 }}
-        allSessions={allSessions as any}
-        allTerms={allTerms as any}
-        sectionHeads={sectionHeads as any}
-        initialTab={initialTab}
-        quickEnrollmentEnabled={quickEnrollmentEnabled}
-        isSuperAdmin={isAdmin}
-      />
+    <div className="min-h-screen bg-[#061824] text-slate-100 antialiased selection:bg-teal-500/30">
+      <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-[#04141e]/95 px-4 sm:px-6 lg:px-8 py-3.5 backdrop-blur-md shadow-xs">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-slate-300 hover:text-white hover:border-[#dfba73] transition cursor-pointer"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Back to Staff Portal</span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <span className="rounded-md bg-teal-500/20 px-2.5 py-0.5 text-xs font-bold text-teal-300 border border-teal-500/30">
+              {classItem.name} ({classItem.grade_name})
+            </span>
+          </div>
+        </div>
+      </header>
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+        {classroomNode}
+      </main>
     </div>
   );
 }

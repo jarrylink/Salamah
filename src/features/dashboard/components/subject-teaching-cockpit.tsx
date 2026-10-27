@@ -1683,9 +1683,14 @@ Complete the workbook chapter review worksheet. Submit notebooks at the beginnin
       {/* MODAL: SCORESHEET UPLOAD & DIRECT PASTE                   */}
       {/* ========================================================= */}
       {isUploadModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border border-teal-500/50 bg-[#092233] p-6 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsUploadModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-2xl flex-col rounded-3xl border border-teal-500/50 bg-[#092233] shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between pb-3 p-6 border-b border-slate-800 shrink-0 bg-[#071d2b]">
               <div>
                 <span className="rounded-md bg-teal-500/20 px-2 py-0.5 text-[10px] font-bold uppercase text-teal-300">
                   Scoresheet Ingestion Engine
@@ -1694,75 +1699,81 @@ Complete the workbook chapter review worksheet. Submit notebooks at the beginnin
                   Upload or Direct Paste Scores ({subject.name})
                 </h3>
               </div>
-              <button onClick={() => setIsUploadModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button
+                onClick={() => setIsUploadModalOpen(false)}
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-300 leading-relaxed">
-              Copy and paste rows directly from Excel or Google Sheets, or paste CSV text.
-              Expected columns: <code className="text-teal-300">Admission No, Student Name, CA 1 (10), CA 2 (10), CA 3 (10), Exam (70)</code>
-            </p>
+            <div className="p-6 overflow-y-auto flex-1 space-y-4 salamah-scrollbar">
+              <p className="text-xs text-slate-300 leading-relaxed">
+                Copy and paste rows directly from Excel or Google Sheets, or paste CSV text.
+                Expected columns: <code className="text-teal-300">Admission No, Student Name, CA 1 (10), CA 2 (10), CA 3 (10), Exam (70)</code>
+              </p>
 
-            <textarea
-              rows={8}
-              value={uploadRawText}
-              onChange={(e) => handleParseRawScores(e.target.value)}
-              placeholder="Paste data here...&#10;e.g.&#10;SAL-2026-101, Fatima Bello, 8, 9, 8, 54&#10;SAL-2026-102, Ibrahim Musa, 9, 8, 9, 58"
-              className="w-full rounded-2xl border border-slate-700 bg-slate-950 p-3 font-mono text-xs text-white placeholder-slate-600 focus:border-[#dfba73] focus:outline-none"
-            />
+              <textarea
+                rows={8}
+                value={uploadRawText}
+                onChange={(e) => handleParseRawScores(e.target.value)}
+                placeholder="Paste data here...&#10;e.g.&#10;SAL-2026-101, Fatima Bello, 8, 9, 8, 54&#10;SAL-2026-102, Ibrahim Musa, 9, 8, 9, 58"
+                className="w-full rounded-2xl border border-slate-700 bg-slate-950 p-3 font-mono text-xs text-white placeholder-slate-600 focus:border-[#dfba73] focus:outline-none"
+              />
 
-            {parsedUploadList.length > 0 && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-white">
-                    Parsed Preview ({parsedUploadList.length} rows, {parsedUploadList.filter((p) => p.isValid).length} matched):
-                  </span>
-                </div>
-                <div className="max-h-48 overflow-y-auto rounded-2xl border border-slate-800 bg-slate-950 p-2">
-                  <table className="w-full text-left text-[11px]">
-                    <thead className="text-slate-400 uppercase text-[9px] border-b border-slate-800">
-                      <tr>
-                        <th className="p-1.5">Match</th>
-                        <th className="p-1.5">Pupil</th>
-                        <th className="p-1.5">Adm No</th>
-                        <th className="p-1.5 text-center">CA 1</th>
-                        <th className="p-1.5 text-center">CA 2</th>
-                        <th className="p-1.5 text-center">CA 3</th>
-                        <th className="p-1.5 text-center">Exam</th>
-                        <th className="p-1.5 text-center">Total</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-slate-800/40">
-                      {parsedUploadList.map((row, idx) => (
-                        <tr key={idx} className={row.isValid ? "text-slate-200" : "text-rose-400"}>
-                          <td className="p-1.5">
-                            {row.isValid ? (
-                              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
-                            ) : (
-                              <span className="text-[10px] text-rose-400 font-bold">Unmatched</span>
-                            )}
-                          </td>
-                          <td className="p-1.5 font-bold">{row.studentName}</td>
-                          <td className="p-1.5 font-mono">{row.admissionNo}</td>
-                          <td className="p-1.5 text-center">{row.ca1}</td>
-                          <td className="p-1.5 text-center">{row.ca2}</td>
-                          <td className="p-1.5 text-center">{row.ca3}</td>
-                          <td className="p-1.5 text-center">{row.exam}</td>
-                          <td className="p-1.5 text-center font-bold text-teal-300">{row.total}</td>
+              {parsedUploadList.length > 0 && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-bold text-white">
+                      Parsed Preview ({parsedUploadList.length} rows, {parsedUploadList.filter((p) => p.isValid).length} matched):
+                    </span>
+                  </div>
+                  <div className="max-h-48 overflow-y-auto rounded-2xl border border-slate-800 bg-slate-950 p-2">
+                    <table className="w-full text-left text-[11px]">
+                      <thead className="text-slate-400 uppercase text-[9px] border-b border-slate-800">
+                        <tr>
+                          <th className="p-1.5">Match</th>
+                          <th className="p-1.5">Pupil</th>
+                          <th className="p-1.5">Adm No</th>
+                          <th className="p-1.5 text-center">CA 1</th>
+                          <th className="p-1.5 text-center">CA 2</th>
+                          <th className="p-1.5 text-center">CA 3</th>
+                          <th className="p-1.5 text-center">Exam</th>
+                          <th className="p-1.5 text-center">Total</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody className="divide-y divide-slate-800/40">
+                        {parsedUploadList.map((row, idx) => (
+                          <tr key={idx} className={row.isValid ? "text-slate-200" : "text-rose-400"}>
+                            <td className="p-1.5">
+                              {row.isValid ? (
+                                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-400" />
+                              ) : (
+                                <span className="text-[10px] text-rose-400 font-bold">Unmatched</span>
+                              )}
+                            </td>
+                            <td className="p-1.5 font-bold">{row.studentName}</td>
+                            <td className="p-1.5 font-mono">{row.admissionNo}</td>
+                            <td className="p-1.5 text-center">{row.ca1}</td>
+                            <td className="p-1.5 text-center">{row.ca2}</td>
+                            <td className="p-1.5 text-center">{row.ca3}</td>
+                            <td className="p-1.5 text-center">{row.exam}</td>
+                            <td className="p-1.5 text-center font-bold text-teal-300">{row.total}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
-              </div>
-            )}
+              )}
+            </div>
 
-            <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-2.5 p-4 border-t border-slate-800 shrink-0 bg-[#071d2b]/60">
               <button
                 type="button"
                 onClick={() => setIsUploadModalOpen(false)}
-                className="rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white"
+                className="rounded-xl border border-slate-700 bg-slate-900 px-4 py-2 text-xs font-semibold text-slate-300 hover:text-white transition cursor-pointer"
               >
                 Cancel
               </button>
@@ -1770,7 +1781,7 @@ Complete the workbook chapter review worksheet. Submit notebooks at the beginnin
                 type="button"
                 onClick={handleApplyUploadedScores}
                 disabled={parsedUploadList.filter((p) => p.isValid).length === 0}
-                className="rounded-xl bg-[#dfba73] px-5 py-2 text-xs font-bold text-slate-950 hover:bg-[#c5a059] disabled:opacity-50 transition shadow-md"
+                className="rounded-xl bg-[#dfba73] px-5 py-2 text-xs font-bold text-slate-950 hover:bg-[#c5a059] disabled:opacity-50 transition shadow-md cursor-pointer"
               >
                 Apply Ingested Scores to Table
               </button>
@@ -1778,15 +1789,25 @@ Complete the workbook chapter review worksheet. Submit notebooks at the beginnin
           </div>
         </div>
       )}
+
       {/* TEACHER ASSIGNMENT MODAL */}
       {isTeacherModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-3xl border border-teal-500/40 bg-[#092233] p-6 shadow-2xl">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsTeacherModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto w-full max-w-md rounded-3xl border border-teal-500/40 bg-[#092233] p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <h3 className="font-display text-lg font-bold text-white">
                 {assignedTeacher ? "Change Subject Teacher" : "Assign Subject Teacher"}
               </h3>
-              <button onClick={() => setIsTeacherModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button
+                onClick={() => setIsTeacherModalOpen(false)}
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>

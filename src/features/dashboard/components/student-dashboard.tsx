@@ -78,20 +78,20 @@ export function StudentDashboardClient({
   const uniqueSubjects = Array.from(new Set(elearningResources.map((r) => r.subjectName))).filter(Boolean);
 
   return (
-    <div className="min-h-screen bg-[#061824] text-slate-100">
+    <div className="min-h-screen bg-[#061824] text-slate-100 antialiased selection:bg-teal-500/30">
       {/* Top Header */}
-      <header className="border-b border-slate-800 bg-[#04141e]/90 px-6 py-4 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-[#04141e]/95 px-4 sm:px-6 lg:px-8 py-3.5 backdrop-blur-md shadow-xs">
         <div className="mx-auto flex max-w-7xl items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="relative h-10 w-10 shrink-0 flex items-center justify-center">
               <Image src={brand.assets.logo} alt="Salamah" width={40} height={40} className="h-full w-auto object-contain" />
             </div>
             <div>
-              <h1 className="font-display text-lg font-bold text-white">
+              <h1 className="font-display text-lg font-bold text-white tracking-tight">
                 Salamah International School
               </h1>
               <p className="text-[10px] font-bold tracking-[0.2em] text-teal-400 uppercase">
-                Student Academic & E-Learning Portal
+                Student Academic &amp; E-Learning Portal
               </p>
             </div>
           </div>
@@ -108,7 +108,7 @@ export function StudentDashboardClient({
             <form action="/api/auth/logout" method="post">
               <button
                 type="submit"
-                className="flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-950/20 px-3 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-900/40"
+                className="flex items-center gap-1.5 rounded-xl border border-rose-500/30 bg-rose-950/20 px-3.5 py-1.5 text-xs font-semibold text-rose-300 hover:bg-rose-900/40 transition cursor-pointer"
               >
                 <LogOut className="h-3.5 w-3.5" />
                 <span>Sign Out</span>
@@ -119,7 +119,7 @@ export function StudentDashboardClient({
       </header>
 
       {/* Main Container */}
-      <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
         {/* Student Welcome Banner */}
         <div className="rounded-3xl border border-teal-500/30 bg-gradient-to-r from-[#041a27] via-slate-900 to-[#082232] p-6 shadow-xl sm:p-8">
           <div className="flex flex-wrap items-center justify-between gap-4">
@@ -378,9 +378,14 @@ export function StudentDashboardClient({
 
         {/* Text Resource Reader Modal */}
         {selectedResource && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-            <div className="flex max-h-[85vh] w-full max-w-2xl flex-col rounded-3xl border border-teal-500/40 bg-[#092233] shadow-2xl">
-              <div className="flex items-center justify-between border-b border-slate-800 p-5">
+          <div
+            className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setSelectedResource(null);
+            }}
+          >
+            <div className="relative my-auto flex max-h-[85vh] w-full max-w-2xl flex-col rounded-3xl border border-teal-500/40 bg-[#092233] shadow-2xl overflow-hidden">
+              <div className="flex items-center justify-between border-b border-slate-800 p-5 shrink-0 bg-[#071d2b]">
                 <div>
                   <span className="rounded-md bg-teal-500/20 px-2 py-0.5 text-xs font-bold text-teal-300">
                     {selectedResource.subjectName}
@@ -391,7 +396,8 @@ export function StudentDashboardClient({
                 </div>
                 <button
                   onClick={() => setSelectedResource(null)}
-                  className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white"
+                  className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition cursor-pointer"
+                  aria-label="Close modal"
                 >
                   <X className="h-5 w-5" />
                 </button>
@@ -401,10 +407,10 @@ export function StudentDashboardClient({
                 {selectedResource.content}
               </div>
 
-              <div className="border-t border-slate-800 p-4 text-right">
+              <div className="border-t border-slate-800 p-4 text-right shrink-0 bg-[#071d2b]/60">
                 <button
                   onClick={() => setSelectedResource(null)}
-                  className="rounded-xl bg-slate-800 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-700"
+                  className="rounded-xl bg-slate-800 px-4 py-2 text-xs font-semibold text-white hover:bg-slate-700 transition cursor-pointer"
                 >
                   Close Reader
                 </button>

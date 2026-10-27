@@ -457,12 +457,6 @@ export function LandingPageClient({
     }
   }
 
-  function setDemoCredential(email: string, pass: string) {
-    setIdentifier(email);
-    setPassword(pass);
-    setSignInError(null);
-  }
-
   // Compute User Initials
   const userInitials = currentUser?.name
     ? currentUser.name
@@ -1587,10 +1581,15 @@ export function LandingPageClient({
 
       {/* POPUP MODAL: GUARDIAN & SCHOLAR ENROLLMENT APPLICATION */}
       {enrollmentModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-3 sm:p-6 backdrop-blur-md overflow-y-auto">
-          <div className="relative w-full max-w-4xl max-h-[92vh] overflow-y-auto rounded-3xl border border-teal-500/40 bg-[#072031] p-5 sm:p-8 shadow-2xl">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/85 p-3 sm:p-6 backdrop-blur-md flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setEnrollmentModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[90vh] w-full max-w-4xl flex-col rounded-3xl border border-teal-500/40 bg-[#072031] shadow-2xl overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+            <div className="flex items-center justify-between p-5 sm:p-6 border-b border-slate-800 shrink-0 bg-[#051724]">
               <div>
                 <span className="text-[10px] font-bold tracking-[0.2em] text-teal-400 uppercase">
                   Direct Online Admissions • 2026/2027 Session
@@ -1603,6 +1602,7 @@ export function LandingPageClient({
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setEnrollmentModalOpen(false)}
                 className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition cursor-pointer"
                 aria-label="Close modal"
@@ -1610,6 +1610,8 @@ export function LandingPageClient({
                 <X className="h-6 w-6" />
               </button>
             </div>
+
+            <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-6 salamah-scrollbar">
 
             {submissionSuccess ? (
               /* Printable Success Slip */
@@ -1981,14 +1983,20 @@ export function LandingPageClient({
                 </div>
               </form>
             )}
+            </div>
           </div>
         </div>
       )}
 
       {/* FLOATING QUICK ACCOUNT LOGIN MODAL */}
       {accountModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-3xl border border-teal-500/40 bg-[#092233] p-6 sm:p-8 shadow-2xl">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setAccountModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto w-full max-w-md rounded-3xl border border-teal-500/40 bg-[#092233] p-6 sm:p-8 shadow-2xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div>
                 <span className="text-[10px] font-bold tracking-[0.2em] text-teal-400 uppercase">
@@ -1999,8 +2007,10 @@ export function LandingPageClient({
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setAccountModalOpen(false)}
-                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white cursor-pointer"
+                className="rounded-lg p-1.5 text-slate-400 hover:bg-slate-800 hover:text-white transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -2054,42 +2064,12 @@ export function LandingPageClient({
                 </div>
               </div>
             ) : (
-              <>
-                {/* Quick Demo Switchers */}
-                <div className="mt-4 rounded-2xl border border-slate-800 bg-slate-900/60 p-3">
-                  <p className="text-[10px] font-bold tracking-wider text-slate-400 uppercase mb-2">
-                    1-Click Role Switcher (Password: 12345678)
-                  </p>
-                  <div className="grid grid-cols-2 gap-2 text-xs">
-                    {[
-                      { role: "Super Admin", email: "superadmin@salamah.edu.ng" },
-                      { role: "Manager", email: "manager1@salamah.edu.ng" },
-                      { role: "Staff", email: "staff1@salamah.edu.ng" },
-                      { role: "Student", email: "student1@salamah.edu.ng" },
-                    ].map((acc) => (
-                      <button
-                        key={acc.role}
-                        type="button"
-                        onClick={() => setDemoCredential(acc.email, "12345678")}
-                        className={`rounded-xl p-2 text-left border transition cursor-pointer ${
-                          identifier === acc.email
-                            ? "bg-teal-500 text-slate-950 font-bold border-teal-400"
-                            : "bg-slate-950 border-slate-800 text-slate-300 hover:border-teal-500/40"
-                        }`}
-                      >
-                        <p className="font-bold">{acc.role}</p>
-                        <p className="text-[9px] truncate opacity-75">{acc.email}</p>
-                      </button>
-                    ))}
+              <form onSubmit={handleQuickSignIn} className="mt-5 space-y-4">
+                {signInError && (
+                  <div className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-2.5 text-xs text-rose-300 font-semibold">
+                    {signInError}
                   </div>
-                </div>
-
-                <form onSubmit={handleQuickSignIn} className="mt-4 space-y-3.5">
-                  {signInError && (
-                    <div className="rounded-xl border border-rose-500/40 bg-rose-950/40 p-2.5 text-xs text-rose-300 font-semibold">
-                      {signInError}
-                    </div>
-                  )}
+                )}
 
                   <div>
                     <label className="block text-xs font-semibold text-slate-300 mb-1">
@@ -2129,12 +2109,21 @@ export function LandingPageClient({
                   <button
                     type="submit"
                     disabled={isSigningIn}
-                    className="w-full rounded-xl bg-teal-500 py-2.5 text-xs font-bold text-slate-950 shadow-md hover:bg-teal-400 disabled:opacity-50 cursor-pointer"
+                    className="w-full rounded-xl bg-teal-500 py-2.5 text-xs font-bold text-slate-950 shadow-md hover:bg-teal-400 disabled:opacity-50 cursor-pointer transition"
                   >
                     {isSigningIn ? "Signing In…" : "Sign In to Dashboard"}
                   </button>
+
+                  <div className="pt-2 text-center">
+                    <Link
+                      href="/login"
+                      onClick={() => setAccountModalOpen(false)}
+                      className="text-xs text-[#dfba73] hover:underline font-semibold"
+                    >
+                      Institutional Gateway Sign-In &rarr;
+                    </Link>
+                  </div>
                 </form>
-              </>
             )}
           </div>
         </div>

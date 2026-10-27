@@ -484,15 +484,22 @@ export function SubjectsClient({
 
       {/* SUBJECT MODAL */}
       {isSubjectModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-3xl border border-teal-500/40 bg-[#092233] p-6 shadow-2xl">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsSubjectModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto w-full max-w-md rounded-3xl border border-teal-500/40 bg-[#092233] p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <h3 className="font-display text-lg font-bold text-white">
                 {editingSubject ? "Edit Subject" : "Create New Subject"}
               </h3>
               <button
+                type="button"
                 onClick={() => setIsSubjectModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -584,13 +591,23 @@ export function SubjectsClient({
 
       {/* COMBINATION MODAL */}
       {isCombModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-          <div className="flex max-h-[90vh] w-full max-w-2xl flex-col rounded-3xl border border-teal-500/40 bg-[#092233] p-6 shadow-2xl">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsCombModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-2xl flex-col rounded-3xl border border-teal-500/40 bg-[#092233] p-6 shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-800 shrink-0">
               <h3 className="font-display text-lg font-bold text-white">
                 {editingCombination ? "Edit Subject Combination" : "Create Multi-Subject Combination"}
               </h3>
-              <button onClick={() => setIsCombModalOpen(false)} className="text-slate-400 hover:text-white">
+              <button
+                type="button"
+                onClick={() => setIsCombModalOpen(false)}
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
+              >
                 <X className="h-5 w-5" />
               </button>
             </div>
@@ -680,8 +697,13 @@ export function SubjectsClient({
 
       {/* 3. ASSIGN TEACHER TO SUBJECT MODAL */}
       {isTeacherModalOpen && targetSubject && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-3xl border border-teal-500/40 bg-[#092233] p-6 shadow-2xl">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsTeacherModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto w-full max-w-md rounded-3xl border border-teal-500/40 bg-[#092233] p-6 shadow-2xl">
             <div className="flex items-center justify-between pb-4 border-b border-slate-800">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400">
@@ -694,7 +716,8 @@ export function SubjectsClient({
               <button
                 type="button"
                 onClick={() => setIsTeacherModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>

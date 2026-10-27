@@ -1307,22 +1307,29 @@ export function StudentsDirectoryClient({
       {/* MODAL: ADMIT & ENROL PENDING APPLICANT */}
       {/* ======================================================== */}
       {enrollingChild && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4">
-          <div className="w-full max-w-md rounded-2xl border border-[#dfba73]/40 bg-[#061b29] p-6 shadow-2xl">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setEnrollingChild(null);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-md flex-col rounded-2xl border border-[#dfba73]/40 bg-[#061b29] shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between border-b border-slate-800 p-5 shrink-0 bg-[#04141e]">
               <div>
-                <h3 className="font-serif text-lg font-bold text-white">Admit & Enrol Scholar</h3>
+                <h3 className="font-serif text-lg font-bold text-white">Admit &amp; Enrol Scholar</h3>
                 <p className="text-xs text-[#dfba73]">Admissions Portal Placement</p>
               </div>
               <button
+                type="button"
                 onClick={() => setEnrollingChild(null)}
-                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <form onSubmit={handleEnrolSubmit} className="mt-4 space-y-4">
+            <form onSubmit={handleEnrolSubmit} className="flex-1 overflow-y-auto p-5 space-y-4 salamah-scrollbar">
               <div className="rounded-xl bg-slate-900/80 p-3.5 border border-slate-800 text-xs flex items-center gap-3.5">
                 {enrollingChild.avatar_url || enrollingChild.passport_url ? (
                   <img
@@ -1379,18 +1386,18 @@ export function StudentsDirectoryClient({
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800 shrink-0">
                 <button
                   type="button"
                   onClick={() => setEnrollingChild(null)}
-                  className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+                  className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingEnrol}
-                  className="flex items-center gap-1.5 rounded-xl bg-teal-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-teal-400 transition"
+                  className="flex items-center gap-1.5 rounded-xl bg-teal-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-teal-400 transition cursor-pointer"
                 >
                   {isSubmittingEnrol ? "Admitting..." : "Confirm Admission"}
                 </button>
@@ -1404,9 +1411,14 @@ export function StudentsDirectoryClient({
       {/* MODAL: REGISTER STUDENT (OFFICIAL OR QUICK) */}
       {/* ======================================================== */}
       {isRegisterModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="w-full max-w-xl rounded-2xl border border-[#dfba73]/40 bg-[#061b29] p-6 shadow-2xl my-8">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsRegisterModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-xl flex-col rounded-2xl border border-[#dfba73]/40 bg-[#061b29] shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between border-b border-slate-800 p-5 shrink-0 bg-[#04141e]">
               <div>
                 <h3 className="font-serif text-lg font-bold text-white">
                   {registerMode === "quick" ? "Add Student to Quick List" : "Register Active Student"}
@@ -1416,23 +1428,24 @@ export function StudentsDirectoryClient({
                 </p>
               </div>
               <button
+                type="button"
                 onClick={() => setIsRegisterModalOpen(false)}
-                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            {registerMode === "quick" && (
-              <div className="mt-4 rounded-xl border border-purple-500/30 bg-purple-950/30 p-3 text-xs text-purple-200 flex items-center gap-2.5">
-                <Sparkles className="h-4 w-4 text-purple-400 shrink-0" />
-                <span>
-                  <strong>Independent Quick Intake:</strong> This student will be assigned directly to your selected class and displayed in both the classroom cockpit and the Quick List without registration delays.
-                </span>
-              </div>
-            )}
-
-            <form onSubmit={handleDirectRegisterSubmit} className="mt-4 space-y-4">
+            <form onSubmit={handleDirectRegisterSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 salamah-scrollbar">
+              {registerMode === "quick" && (
+                <div className="rounded-xl border border-purple-500/30 bg-purple-950/30 p-3 text-xs text-purple-200 flex items-center gap-2.5">
+                  <Sparkles className="h-4 w-4 text-purple-400 shrink-0" />
+                  <span>
+                    <strong>Independent Quick Intake:</strong> This student will be assigned directly to your selected class and displayed in both the classroom cockpit and the Quick List without registration delays.
+                  </span>
+                </div>
+              )}
               {/* Target Class Selector (Prominently at the top as requested) */}
               <div className="rounded-xl border border-teal-500/30 bg-[#072433]/60 p-3.5 space-y-1.5">
                 <label className="block text-xs font-bold text-teal-300 flex items-center justify-between">
@@ -1633,22 +1646,29 @@ export function StudentsDirectoryClient({
       {/* MODAL: EDIT ACTIVE OR QUICK STUDENT */}
       {/* ======================================================== */}
       {editingStudent && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="w-full max-w-xl rounded-2xl border border-[#dfba73]/40 bg-[#061b29] p-6 shadow-2xl my-8">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setEditingStudent(null);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-xl flex-col rounded-2xl border border-[#dfba73]/40 bg-[#061b29] shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between border-b border-slate-800 p-5 shrink-0 bg-[#04141e]">
               <div>
                 <h3 className="font-serif text-lg font-bold text-white">Edit Student Information</h3>
                 <p className="text-xs text-[#dfba73]">{editingStudent.admission_number}</p>
               </div>
               <button
+                type="button"
                 onClick={() => setEditingStudent(null)}
-                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <form onSubmit={handleEditStudentSubmit} className="mt-4 space-y-4">
+            <form onSubmit={handleEditStudentSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 salamah-scrollbar">
               {/* Passport Picture Preview & Input */}
               <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3.5 space-y-2.5">
                 <label className="block text-[11px] font-semibold text-slate-300">
@@ -1804,18 +1824,18 @@ export function StudentsDirectoryClient({
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800 shrink-0">
                 <button
                   type="button"
                   onClick={() => setEditingStudent(null)}
-                  className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+                  className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingEdit}
-                  className="rounded-xl bg-[#dfba73] px-4 py-2 text-xs font-bold text-slate-950 hover:bg-[#c5a059] transition"
+                  className="rounded-xl bg-[#dfba73] px-4 py-2 text-xs font-bold text-slate-950 hover:bg-[#c5a059] transition cursor-pointer"
                 >
                   {isSubmittingEdit ? "Updating..." : "Save Changes"}
                 </button>
@@ -1829,22 +1849,29 @@ export function StudentsDirectoryClient({
       {/* MODAL: ADD PENDING APPLICANT */}
       {/* ======================================================== */}
       {isAddPendingModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="w-full max-w-xl rounded-2xl border border-amber-500/40 bg-[#061b29] p-6 shadow-2xl my-8">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsAddPendingModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-xl flex-col rounded-2xl border border-amber-500/40 bg-[#061b29] shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between border-b border-slate-800 p-5 shrink-0 bg-[#04141e]">
               <div>
                 <h3 className="font-serif text-lg font-bold text-white">Add Pending Applicant</h3>
                 <p className="text-xs text-amber-400">Manual Admissions Intake</p>
               </div>
               <button
+                type="button"
                 onClick={() => setIsAddPendingModalOpen(false)}
-                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreatePendingSubmit} className="mt-4 space-y-4">
+            <form onSubmit={handleCreatePendingSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 salamah-scrollbar">
               {/* Passport Picture Preview & Input */}
               <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3.5 space-y-2.5">
                 <label className="block text-[11px] font-semibold text-slate-300">
@@ -2023,18 +2050,18 @@ export function StudentsDirectoryClient({
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800 shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsAddPendingModalOpen(false)}
-                  className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+                  className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingNewPending}
-                  className="rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-amber-400 transition"
+                  className="rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-amber-400 transition cursor-pointer"
                 >
                   {isSubmittingNewPending ? "Submitting..." : "Add to Admissions Intake"}
                 </button>
@@ -2048,22 +2075,29 @@ export function StudentsDirectoryClient({
       {/* MODAL: EDIT PENDING APPLICANT */}
       {/* ======================================================== */}
       {editingPending && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-xs p-4 overflow-y-auto">
-          <div className="w-full max-w-xl rounded-2xl border border-amber-500/40 bg-[#061b29] p-6 shadow-2xl my-8">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setEditingPending(null);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-xl flex-col rounded-2xl border border-amber-500/40 bg-[#061b29] shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between border-b border-slate-800 p-5 shrink-0 bg-[#04141e]">
               <div>
                 <h3 className="font-serif text-lg font-bold text-white">Edit Applicant Record</h3>
                 <p className="text-xs text-amber-400">{editingPending.application_number}</p>
               </div>
               <button
+                type="button"
                 onClick={() => setEditingPending(null)}
-                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
 
-            <form onSubmit={handleEditPendingSubmit} className="mt-4 space-y-4">
+            <form onSubmit={handleEditPendingSubmit} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 salamah-scrollbar">
               {/* Passport Picture Preview & Input */}
               <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-3.5 space-y-2.5">
                 <label className="block text-[11px] font-semibold text-slate-300">
@@ -2217,18 +2251,18 @@ export function StudentsDirectoryClient({
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800 shrink-0">
                 <button
                   type="button"
                   onClick={() => setEditingPending(null)}
-                  className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white"
+                  className="rounded-xl px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={isSubmittingEditPending}
-                  className="rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-amber-400 transition"
+                  className="rounded-xl bg-amber-500 px-4 py-2 text-xs font-bold text-slate-950 hover:bg-amber-400 transition cursor-pointer"
                 >
                   {isSubmittingEditPending ? "Saving..." : "Save Changes"}
                 </button>

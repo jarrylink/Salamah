@@ -332,7 +332,7 @@ export default async function SubjectCockpitPage({
         ORDER BY week_number ASC
       `, [id])) as any[];
 
-  return (
+  const cockpit = (
     <SubjectTeachingCockpit
       subject={{
         id: subjectData.id,
@@ -363,5 +363,33 @@ export default async function SubjectCockpitPage({
       initialTab={initialTab}
       isSuperAdmin={isAdmin}
     />
+  );
+
+  if (isAdmin) {
+    return cockpit;
+  }
+
+  return (
+    <div className="min-h-screen bg-[#061824] text-slate-100 antialiased selection:bg-teal-500/30">
+      <header className="sticky top-0 z-30 border-b border-slate-800/80 bg-[#04141e]/95 px-4 sm:px-6 lg:px-8 py-3.5 backdrop-blur-md shadow-xs">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <Link
+            href="/dashboard"
+            className="flex items-center gap-1.5 rounded-xl border border-slate-700 bg-slate-900 px-3.5 py-1.5 text-xs font-semibold text-slate-300 hover:text-white hover:border-[#dfba73] transition cursor-pointer"
+          >
+            <ArrowLeft className="h-3.5 w-3.5" />
+            <span>Back to Staff Portal</span>
+          </Link>
+          <div className="flex items-center gap-2">
+            <span className="rounded-md bg-teal-500/20 px-2 py-0.5 text-xs font-bold text-teal-300 border border-teal-500/30">
+              {subjectData.name} ({subjectData.code})
+            </span>
+          </div>
+        </div>
+      </header>
+      <main className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+        {cockpit}
+      </main>
+    </div>
   );
 }

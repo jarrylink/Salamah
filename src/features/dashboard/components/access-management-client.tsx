@@ -431,10 +431,15 @@ export function AccessManagementClient({
 
       {/* EDIT / CREATE PERSONNEL MODAL */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-xs">
-          <div className="flex max-h-[92vh] w-full max-w-2xl flex-col rounded-3xl border border-teal-500/40 bg-[#092233] shadow-2xl">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-2xl flex-col rounded-3xl border border-teal-500/40 bg-[#092233] shadow-2xl overflow-hidden">
             {/* Modal Header */}
-            <div className="flex items-center justify-between border-b border-slate-800 p-6">
+            <div className="flex items-center justify-between border-b border-slate-800 p-5 sm:p-6 shrink-0 bg-[#071d2b]">
               <div>
                 <span className="rounded-md bg-teal-500/20 px-2 py-0.5 text-xs font-bold text-teal-300 uppercase">
                   {editingUser ? "Edit Account" : "Register Personnel"}
@@ -444,8 +449,10 @@ export function AccessManagementClient({
                 </h3>
               </div>
               <button
+                type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white"
+                className="rounded-lg p-2 text-slate-400 hover:bg-slate-800 hover:text-white transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>

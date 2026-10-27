@@ -896,9 +896,14 @@ export function AccessControlClient({
       {/* MODAL 1: CREATE / EDIT USER ACCOUNT                      */}
       {/* ======================================================== */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border border-[#dfba73]/40 bg-[#092233] p-6 sm:p-7 shadow-2xl space-y-5">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setIsModalOpen(false);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-2xl flex-col rounded-3xl border border-[#dfba73]/40 bg-[#092233] shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between border-b border-slate-800 p-5 shrink-0 bg-[#04141e]">
               <div>
                 <span className="rounded-full bg-[#dfba73]/20 border border-[#dfba73]/40 px-3 py-0.5 text-[10px] font-bold tracking-widest text-[#dfba73] uppercase">
                   {editingUser ? "Modify Account Credentials" : "Provision New User Account"}
@@ -910,13 +915,14 @@ export function AccessControlClient({
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="text-slate-400 hover:text-white"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSaveUser} className="space-y-4">
+            <form onSubmit={handleSaveUser} className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-4 salamah-scrollbar">
               {/* Role & Designation */}
               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                 <div>
@@ -1216,11 +1222,16 @@ export function AccessControlClient({
       {/* MODAL 2: USER DOSSIER & FILE MANAGEMENT SYSTEM            */}
       {/* ======================================================== */}
       {dossierUser && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-2xl max-h-[92vh] overflow-y-auto rounded-3xl border border-[#dfba73]/40 bg-[#092233] p-6 shadow-2xl space-y-6">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+        <div
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 p-4 sm:p-6 backdrop-blur-sm flex items-center justify-center animate-in fade-in duration-200"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setDossierUser(null);
+          }}
+        >
+          <div className="relative my-auto flex max-h-[88vh] w-full max-w-2xl flex-col rounded-3xl border border-[#dfba73]/40 bg-[#092233] shadow-2xl overflow-hidden">
+            <div className="flex items-center justify-between border-b border-slate-800 p-5 shrink-0 bg-[#04141e]">
               <div className="flex items-center gap-3">
-                <div className="relative h-12 w-12 overflow-hidden rounded-xl border border-[#dfba73] bg-slate-950">
+                <div className="relative h-12 w-12 overflow-hidden rounded-xl border border-[#dfba73] bg-slate-950 shrink-0">
                   {dossierUser.passport_url || dossierUser.avatar_url ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
@@ -1250,11 +1261,14 @@ export function AccessControlClient({
               <button
                 type="button"
                 onClick={() => setDossierUser(null)}
-                className="text-slate-400 hover:text-white"
+                className="rounded-lg p-1 text-slate-400 hover:text-white hover:bg-slate-800 transition cursor-pointer"
+                aria-label="Close modal"
               >
                 <X className="h-5 w-5" />
               </button>
             </div>
+
+            <div className="flex-1 overflow-y-auto p-5 sm:p-6 space-y-6 salamah-scrollbar">
 
             {/* List of Files */}
             <div className="space-y-3">
@@ -1388,6 +1402,7 @@ export function AccessControlClient({
             </form>
           </div>
         </div>
+      </div>
       )}
     </div>
   );

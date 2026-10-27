@@ -12,18 +12,10 @@ import {
   LockKeyhole,
   Mail,
   ShieldCheck,
-  Sparkles,
 } from "lucide-react";
 import { brand } from "@/config/brand";
 
 type FormErrors = { identifier?: string; password?: string; form?: string };
-
-const demoAccounts = [
-  { role: "Super Admin", email: "superadmin@salamah.ng", pass: "12345678", badge: "All Access" },
-  { role: "Manager", email: "manager1@salamah.ng", pass: "12345678", badge: "Supervisory" },
-  { role: "Staff (Teacher)", email: "staff1@salamah.ng", pass: "12345678", badge: "Primary 1" },
-  { role: "Student", email: "student1@salamah.ng", pass: "12345678", badge: "Pupil" },
-];
 
 export function LoginGateway() {
   const [identifier, setIdentifier] = useState("");
@@ -31,12 +23,6 @@ export function LoginGateway() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
-
-  function setDemoAccount(email: string, pass: string) {
-    setIdentifier(email);
-    setPassword(pass);
-    setErrors({});
-  }
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -192,52 +178,7 @@ export function LoginGateway() {
             </p>
           </header>
 
-          {/* Quick Demo Role Selector with Gold Badges */}
-          <div className="mt-6 rounded-2xl border border-[#c5a059]/30 bg-[#051c2d] p-4 shadow-md">
-            <div className="flex items-center justify-between mb-2.5">
-              <span className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-[#dfba73]">
-                <Sparkles className="h-3.5 w-3.5 text-[#dfba73]" />
-                <span>Instant Account Selector</span>
-              </span>
-              <span className="text-[10px] text-slate-400 font-mono">Password: 12345678</span>
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              {demoAccounts.map((acc) => {
-                const isSelected = identifier === acc.email;
-                return (
-                  <button
-                    key={acc.role}
-                    type="button"
-                    onClick={() => setDemoAccount(acc.email, acc.pass)}
-                    className={`flex flex-col items-start rounded-xl p-2.5 text-left border transition ${
-                      isSelected
-                        ? "bg-[#0a2f4a] text-white border-[#c5a059] ring-1 ring-[#c5a059]/50 shadow-sm"
-                        : "bg-[#031522] border-slate-700/80 text-slate-300 hover:border-[#c5a059]/50 hover:bg-[#072439]"
-                    }`}
-                  >
-                    <div className="flex w-full items-center justify-between">
-                      <span className="text-xs font-serif font-bold text-white">{acc.role}</span>
-                      <span
-                        className={`text-[8.5px] px-1.5 py-0.2 rounded-full font-bold ${
-                          isSelected
-                            ? "bg-[#c5a059] text-[#020b14]"
-                            : "bg-slate-800 text-[#dfba73]"
-                        }`}
-                      >
-                        {acc.badge}
-                      </span>
-                    </div>
-                    <span className="mt-1 text-[10px] font-mono text-slate-400 truncate max-w-full">
-                      {acc.email}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <form className="mt-6 space-y-4" noValidate onSubmit={handleSubmit}>
+          <form className="mt-8 space-y-5" noValidate onSubmit={handleSubmit}>
             {errors.form && (
               <p
                 role="alert"
