@@ -1,4 +1,2 @@
-import { GraduationCap } from "lucide-react";
-import { WorkspacePage } from "@/features/dashboard/components/workspace-page";
-
-export default function AcademicStructurePage() { return <WorkspacePage eyebrow="Superadmin / academic structure" title="Academic structure" description="Set the framework that will organise teaching, learning, and reporting across the school." icon={GraduationCap} items={[{ title: "Academic sessions", description: "Define the school year, terms, and key academic periods.", state: "Next module" }, { title: "Classes & streams", description: "Create the class structure that supports enrolment and teaching.", state: "Planned" }, { title: "Subjects", description: "Prepare the subjects and curriculum areas offered by the school.", state: "Planned" }, { title: "Teaching assignments", description: "Connect staff roles to the academic responsibilities they hold.", state: "Planned" }]} />; }
+import { ModuleDirectory } from "@/features/management/module-directory";
+export default function AcademicStructurePage() { return <ModuleDirectory />; }

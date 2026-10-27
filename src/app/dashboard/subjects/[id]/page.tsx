@@ -1,0 +1,310 @@
+import { notFound } from "next/navigation";
+import { sqlClient } from "@/db";
+import { SubjectTeachingCockpit } from "@/features/dashboard/components/subject-teaching-cockpit";
+import { resolveAcademicContext } from "@/features/academic/lib/context";
+
+export default async function SubjectCockpitPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>;
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const { id } = await params;
+  const query = await searchParams;
+  const initialTab = (typeof query.tab === "string" && ["scheme", "notes", "plans", "scores"].includes(query.tab))
+    ? (query.tab as "scheme" | "notes" | "plans" | "scores")
+    : "scheme";
+
+  // 1. Fetch Subject Information
+  const subjectResult = await sqlClient.query(`
+    SELECT id, name, code, short_name, description, status
+    FROM subjects
+    WHERE id = $1
+    LIMIT 1
+  `, [id]);
+
+  if (!subjectResult.length) {
+    notFound();
+  }
+
+  const subjectData = subjectResult[0] as {
+    id: string;
+    name: string;
+    code: string;
+    short_name: string | null;
+    description: string | null;
+    status: string;
+  };
+
+  // 2. Resolve Global Academic Context
+  const academicContext = await resolveAcademicContext({
+    sessionId: typeof query.sessionId === "string" && query.sessionId.trim() ? query.sessionId : undefined,
+    termId: typeof query.termId === "string" && query.termId.trim() ? query.termId : undefined,
+  });
+
+  let currentSession: { id: string; name: string } | null = null;
+  let currentTerm: { id: string; name: string; term_number?: number } | null = null;
+
+  if (academicContext?.sessionId) {
+    const sessionRes = await sqlClient.query(
+      "SELECT id, name FROM academic_sessions WHERE id = $1 LIMIT 1",
+      [academicContext.sessionId]
+    ) as { id: string; name: string }[];
+    if (sessionRes[0]) currentSession = sessionRes[0];
+  }
+
+  if (!currentSession) {
+    const [defSession] = await sqlClient.query(
+      "SELECT id, name FROM academic_sessions WHERE is_current = true LIMIT 1"
+    ) as { id: string; name: string }[];
+    currentSession = defSession || null;
+  }
+
+  if (academicContext?.termId && currentSession?.id) {
+    const termRes = await sqlClient.query(
+      "SELECT id, name, term_number FROM academic_terms WHERE id = $1 AND session_id = $2 LIMIT 1",
+      [academicContext.termId, currentSession.id]
+    ) as { id: string; name: string; term_number: number }[];
+    if (termRes[0]) currentTerm = termRes[0];
+  }
+
+  if (!currentTerm && currentSession?.id) {
+    const [defTerm] = await sqlClient.query(
+      "SELECT id, name, term_number FROM academic_terms WHERE session_id = $1 AND is_current = true LIMIT 1",
+      [currentSession.id]
+    ) as { id: string; name: string; term_number: number }[];
+    currentTerm = defTerm || null;
+  }
+
+  if (!currentTerm && currentSession?.id) {
+    const [firstTerm] = await sqlClient.query(
+      "SELECT id, name, term_number FROM academic_terms WHERE session_id = $1 ORDER BY term_number ASC LIMIT 1",
+      [currentSession.id]
+    ) as { id: string; name: string; term_number: number }[];
+    currentTerm = firstTerm || null;
+  }
+
+  const finalSession = currentSession || { id: "", name: "2026/2027" };
+  const finalTerm = currentTerm || { id: "", name: "First Term" };
+
+  // 3. Find ONLY Classes taking this specific subject via attached Subject Combinations
+  const classes = (await sqlClient.query(`
+    SELECT DISTINCT
+      c.id,
+      c.name,
+      c.code,
+      g.name as grade_name,
+      g.sort_order,
+      (SELECT count(*)::int FROM student_enrollments se WHERE se.class_id = c.id AND se.status = 'active') as student_count
+    FROM classes c
+    JOIN grades g ON g.id = c.grade_id
+    WHERE c.id IN (
+      SELECT csc.class_id 
+      FROM class_subject_combinations csc 
+      JOIN subject_combination_subjects scs ON scs.combination_id = csc.combination_id
+      WHERE scs.subject_id = $1 AND csc.status = 'active'
+    )
+    ORDER BY g.sort_order, c.name
+  `, [id])) as { id: string; name: string; code: string; grade_name: string; student_count: number }[];
+
+  // Determine selected class
+  const selectedClassId =
+    (typeof query.classId === "string" ? query.classId : null) ||
+    classes[0]?.id ||
+    "";
+  const selectedClass = classes.find((c) => c.id === selectedClassId) || classes[0] || null;
+
+  // 3b. Fetch Subject Teachers & All Teachers for flexible assignment
+  const subjectTeachers = (await sqlClient.query(`
+    SELECT
+      tsa.id,
+      t.id as teacher_id,
+      p.first_name || ' ' || p.last_name as name,
+      s.staff_number,
+      tsa.class_id
+    FROM teacher_subject_assignments tsa
+    JOIN teachers t ON t.id = tsa.teacher_id
+    JOIN staff s ON s.id = t.staff_id
+    JOIN people p ON p.id = s.person_id
+    WHERE tsa.subject_id = $1 AND tsa.status = 'active'
+  `, [id])) as { id: string; teacher_id: string; name: string; staff_number: string | null; class_id: string | null }[];
+
+  const allTeachers = (await sqlClient.query(`
+    SELECT t.id, p.first_name || ' ' || p.last_name as name, s.staff_number, u.email
+    FROM teachers t
+    JOIN staff s ON s.id = t.staff_id
+    JOIN people p ON p.id = s.person_id
+    JOIN users u ON u.person_id = p.id
+    WHERE t.status = 'active'
+    ORDER BY p.first_name, p.last_name
+  `)) as { id: string; name: string; staff_number: string | null; email?: string }[];
+
+  const currentAssignedTeacher =
+    (selectedClass ? subjectTeachers.find((st) => st.class_id === selectedClass.id) : null) ||
+    subjectTeachers[0] ||
+    null;
+
+  // 4. Fetch Enrolled Students for the Selected Class (Strictly real DB data, no hardcoding)
+  const students = (selectedClass?.id
+    ? await sqlClient.query(`
+        SELECT
+          s.id,
+          s.admission_number as "admissionNumber",
+          p.first_name || ' ' || p.last_name as name,
+          p.avatar_url as "avatarUrl",
+          p.gender
+        FROM student_enrollments se
+        JOIN students s ON s.id = se.student_id
+        JOIN people p ON p.id = s.person_id
+        WHERE se.class_id = $1 AND se.status = 'active'
+        ORDER BY p.last_name, p.first_name
+      `, [selectedClass.id])
+    : []) as { id: string; admissionNumber: string; name: string }[];
+
+  // 5. Fetch Assessment Scores for Subject and Selected Class in current session and term
+  let scores: {
+    studentId: string;
+    score: number;
+    typeCode: string;
+    typeName: string;
+  }[] = [];
+
+  if (selectedClass?.id) {
+    let scoresQuery = `
+      SELECT
+        sc.student_id as "studentId",
+        sc.score,
+        at.code as "typeCode",
+        at.name as "typeName"
+      FROM assessment_scores sc
+      JOIN assessments a ON a.id = sc.assessment_id
+      JOIN assessment_types at ON at.id = a.assessment_type_id
+      WHERE a.subject_id = $1 AND a.class_id = $2
+    `;
+    const scoreParams: any[] = [id, selectedClass.id];
+
+    if (finalSession.id) {
+      scoreParams.push(finalSession.id);
+      scoresQuery += ` AND a.session_id = $${scoreParams.length}`;
+    }
+    if (finalTerm.id) {
+      scoreParams.push(finalTerm.id);
+      scoresQuery += ` AND a.term_id = $${scoreParams.length}`;
+    }
+
+    scores = (await sqlClient.query(scoresQuery, scoreParams)) as {
+      studentId: string;
+      score: number;
+      typeCode: string;
+      typeName: string;
+    }[];
+  }
+
+  // 6. Fetch Scheme of Work (12 Weeks)
+  const schemeResult = (selectedClass?.id
+    ? await sqlClient.query(`
+        SELECT weeks_data
+        FROM subject_schemes_of_work
+        WHERE subject_id = $1 AND (class_id = $2 OR class_id IS NULL)
+        ORDER BY updated_at DESC
+        LIMIT 1
+      `, [id, selectedClass.id])
+    : await sqlClient.query(`
+        SELECT weeks_data
+        FROM subject_schemes_of_work
+        WHERE subject_id = $1 AND class_id IS NULL
+        ORDER BY updated_at DESC
+        LIMIT 1
+      `, [id])) as { weeks_data: any[] }[];
+
+  const schemeWeeks = schemeResult[0]?.weeks_data || [];
+
+  // 7. Fetch Lesson Notes
+  const lessonNotes = (selectedClass?.id
+    ? await sqlClient.query(`
+        SELECT
+          week_number as "weekNumber",
+          topic,
+          content,
+          learning_materials as "learningMaterials",
+          homework
+        FROM subject_lesson_notes
+        WHERE subject_id = $1 AND (class_id = $2 OR class_id IS NULL)
+        ORDER BY week_number ASC
+      `, [id, selectedClass.id])
+    : await sqlClient.query(`
+        SELECT
+          week_number as "weekNumber",
+          topic,
+          content,
+          learning_materials as "learningMaterials",
+          homework
+        FROM subject_lesson_notes
+        WHERE subject_id = $1 AND class_id IS NULL
+        ORDER BY week_number ASC
+      `, [id])) as any[];
+
+  // 8. Fetch Lesson Plans
+  const lessonPlans = (selectedClass?.id
+    ? await sqlClient.query(`
+        SELECT
+          week_number as "weekNumber",
+          topic,
+          duration_minutes as "durationMinutes",
+          behavioral_objectives as "behavioralObjectives",
+          instructional_materials as "instructionalMaterials",
+          previous_knowledge as "previousKnowledge",
+          evaluation,
+          conclusion
+        FROM subject_lesson_plans
+        WHERE subject_id = $1 AND (class_id = $2 OR class_id IS NULL)
+        ORDER BY week_number ASC
+      `, [id, selectedClass.id])
+    : await sqlClient.query(`
+        SELECT
+          week_number as "weekNumber",
+          topic,
+          duration_minutes as "durationMinutes",
+          behavioral_objectives as "behavioralObjectives",
+          instructional_materials as "instructionalMaterials",
+          previous_knowledge as "previousKnowledge",
+          evaluation,
+          conclusion
+        FROM subject_lesson_plans
+        WHERE subject_id = $1 AND class_id IS NULL
+        ORDER BY week_number ASC
+      `, [id])) as any[];
+
+  return (
+    <SubjectTeachingCockpit
+      subject={{
+        id: subjectData.id,
+        name: subjectData.name,
+        code: subjectData.code,
+        classId: selectedClass?.id || "",
+        className: selectedClass ? `${selectedClass.grade_name ? `${selectedClass.grade_name} ` : ""}${selectedClass.name}` : "No Class Attached",
+        students,
+        scores,
+        schemeWeeks,
+        lessonNotes,
+        lessonPlans,
+      }}
+      assignedTeacher={currentAssignedTeacher ? {
+        id: currentAssignedTeacher.teacher_id,
+        name: currentAssignedTeacher.name,
+        staffNumber: currentAssignedTeacher.staff_number,
+      } : null}
+      teachers={allTeachers}
+      availableClasses={classes.map((c) => ({
+        id: c.id,
+        name: `${c.grade_name ? `${c.grade_name} ` : ""}${c.name}`,
+        code: c.code,
+        studentCount: c.student_count,
+      }))}
+      currentSession={finalSession}
+      currentTerm={finalTerm}
+      initialTab={initialTab}
+    />
+  );
+}

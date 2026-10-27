@@ -1,4 +1,2 @@
-import { UsersRound } from "lucide-react";
-import { WorkspacePage } from "@/features/dashboard/components/workspace-page";
-
-export default function PeopleAccessPage() { return <WorkspacePage eyebrow="Superadmin / people & access" title="People & access" description="Prepare the account and access foundation for every member of the Salamah school community." icon={UsersRound} items={[{ title: "User accounts", description: "Create and maintain secure accounts for school users.", state: "Next module" }, { title: "Role management", description: "Define the access boundaries that reflect school responsibilities.", state: "Role-aware" }, { title: "Staff directory", description: "Build the internal staff record and assignment structure.", state: "Planned" }, { title: "Student & guardian profiles", description: "Prepare the connected profiles used throughout school operations.", state: "Planned" }]} />; }
+import { ModuleDirectory } from "@/features/management/module-directory";
+export default function PeopleAccessPage() { return <ModuleDirectory peopleOnly />; }

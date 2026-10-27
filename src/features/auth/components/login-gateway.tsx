@@ -1,33 +1,66 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
-import { Eye, EyeOff, HelpCircle, LockKeyhole, Mail, ShieldCheck } from "lucide-react";
+import {
+  ArrowLeft,
+  Crown,
+  Eye,
+  EyeOff,
+  HelpCircle,
+  LockKeyhole,
+  Mail,
+  ShieldCheck,
+  Sparkles,
+} from "lucide-react";
 import { brand } from "@/config/brand";
 
 type FormErrors = { identifier?: string; password?: string; form?: string };
 
+const demoAccounts = [
+  { role: "Super Admin", email: "superadmin@salamah.ng", pass: "12345678", badge: "All Access" },
+  { role: "Manager", email: "manager1@salamah.ng", pass: "12345678", badge: "Supervisory" },
+  { role: "Staff (Teacher)", email: "staff1@salamah.ng", pass: "12345678", badge: "Primary 1" },
+  { role: "Student", email: "student1@salamah.ng", pass: "12345678", badge: "Pupil" },
+];
+
 export function LoginGateway() {
+  const [identifier, setIdentifier] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
 
+  function setDemoAccount(email: string, pass: string) {
+    setIdentifier(email);
+    setPassword(pass);
+    setErrors({});
+  }
+
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
     const nextErrors: FormErrors = {};
-    const identifier = String(data.get("identifier") ?? "").trim();
-    const password = String(data.get("password") ?? "");
-    if (!identifier) nextErrors.identifier = "Enter your email address.";
+    if (!identifier.trim()) nextErrors.identifier = "Enter your username or email address.";
     if (!password) nextErrors.password = "Enter your password.";
     if (Object.keys(nextErrors).length) return setErrors(nextErrors);
     setErrors({});
     setIsLoading(true);
+
+    // Auto-fill @salamah.ng if user entered username without domain
+    const finalIdentifier = identifier.trim().includes("@")
+      ? identifier.trim()
+      : `${identifier.trim()}@salamah.ng`;
+
     try {
-      const response = await fetch("/api/auth/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ identifier, password }) });
-      const result = await response.json() as { message?: string; redirectTo?: string };
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ identifier: finalIdentifier, password }),
+      });
+      const result = (await response.json()) as { message?: string; redirectTo?: string };
       if (!response.ok || !result.redirectTo) {
-        setErrors({ form: result.message ?? "We could not sign you in. Please try again." });
+        setErrors({ form: result.message ?? "We could not sign you in. Please check your credentials." });
         return;
       }
       window.location.assign(result.redirectTo);
@@ -37,27 +70,303 @@ export function LoginGateway() {
       setIsLoading(false);
     }
   }
-  const clear = (field: "identifier" | "password") => setErrors((current) => ({ ...current, [field]: undefined, form: undefined }));
 
-  return <main className="min-h-screen bg-[#f8fafc] lg:grid lg:grid-cols-[minmax(0,1.06fr)_minmax(500px,.94fr)]">
-    <section className="relative hidden min-h-screen overflow-hidden bg-[#03283a] px-10 py-10 text-white lg:flex lg:flex-col xl:px-[clamp(3rem,7vw,8.5rem)] xl:py-[clamp(3rem,6vh,5.5rem)]">
-      <Image src={brand.assets.background} alt="" fill priority sizes="55vw" className="object-cover opacity-25" />
-      <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(3,40,58,.98),rgba(4,62,82,.86)_57%,rgba(30,140,122,.65))]" />
-      <div className="relative flex items-center gap-4 salamah-enter"><div className="relative h-15 w-15 overflow-hidden rounded-2xl border border-white/25 bg-white shadow-xl"><Image src={brand.assets.logo} alt="Salamah International School" fill sizes="60px" className="object-cover" /></div><div><p className="font-display text-2xl leading-none">Salamah</p><p className="mt-1 text-[10px] font-bold tracking-[0.22em] text-teal-100 uppercase">International School</p></div></div>
-      <div className="relative my-auto max-w-xl pb-10 salamah-enter [animation-delay:120ms]"><div className="mb-8 h-px w-16 bg-[#28a38e]" /><p className="mb-5 text-xs font-bold tracking-[0.2em] text-teal-100 uppercase">Secure digital gateway</p><h1 className="font-display text-5xl leading-[1.08] tracking-[-0.025em] xl:text-6xl">Thoughtful systems for a thriving school community.</h1><p className="mt-7 max-w-lg font-editorial text-xl leading-relaxed text-slate-200">A calm, secure place for the people who keep Salamah moving forward.</p></div>
-      <div className="relative flex items-center gap-3 text-sm text-teal-50/80 salamah-enter [animation-delay:220ms]"><ShieldCheck className="h-5 w-5 text-[#67d4c1]" aria-hidden="true" /><span>For authorised members of the school community</span></div>
-    </section>
-    <section className="flex min-h-screen items-center justify-center px-5 py-8 sm:px-10 lg:px-12"><div className="w-full max-w-md salamah-enter">
-      <div className="mb-10 flex items-center gap-3 lg:hidden"><div className="relative h-12 w-12 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm"><Image src={brand.assets.logo} alt="Salamah International School" fill sizes="48px" className="object-cover" /></div><div><p className="font-display text-xl leading-none text-[#043e52]">Salamah</p><p className="mt-1 text-[9px] font-bold tracking-[0.18em] text-[#1e8c7a] uppercase">International School</p></div></div>
-      <header><p className="text-xs font-bold tracking-[0.18em] text-[#1e8c7a] uppercase">Management system</p><h2 className="mt-3 font-display text-4xl tracking-[-0.02em] text-[#03283a]">Welcome back</h2><p className="mt-3 text-[15px] leading-6 text-slate-600">Sign in to securely access the Salamah School Management System.</p></header>
-      <form className="mt-9 space-y-5" noValidate onSubmit={handleSubmit}>
-        {errors.form && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm leading-5 text-rose-800">{errors.form}</p>}
-        <div><label htmlFor="identifier" className="mb-2 block text-sm font-semibold text-[#043e52]">Email address</label><div className="relative"><Mail className="pointer-events-none absolute top-1/2 left-4 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" aria-hidden="true" /><input id="identifier" name="identifier" type="email" autoComplete="username" aria-invalid={Boolean(errors.identifier)} aria-describedby={errors.identifier ? "identifier-error" : undefined} onChange={() => clear("identifier")} className="h-13 w-full rounded-xl border border-slate-200 bg-white pr-4 pl-11 text-[15px] outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#28a38e] focus:ring-4 focus:ring-[#28a38e]/15" placeholder="Enter your email address" /></div>{errors.identifier && <p id="identifier-error" role="alert" className="mt-2 text-sm text-rose-700">{errors.identifier}</p>}</div>
-        <div><div className="mb-2 flex items-center justify-between gap-4"><label htmlFor="password" className="block text-sm font-semibold text-[#043e52]">Password</label><a href="mailto:office@salamah.edu?subject=Password%20assistance" className="text-sm font-semibold text-[#1e8c7a] transition hover:text-[#043e52] focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-[#28a38e]">Forgot password?</a></div><div className="relative"><LockKeyhole className="pointer-events-none absolute top-1/2 left-4 h-[18px] w-[18px] -translate-y-1/2 text-slate-400" aria-hidden="true" /><input id="password" name="password" type={showPassword ? "text" : "password"} autoComplete="current-password" aria-invalid={Boolean(errors.password)} aria-describedby={errors.password ? "password-error" : undefined} onChange={() => clear("password")} className="h-13 w-full rounded-xl border border-slate-200 bg-white pr-12 pl-11 text-[15px] outline-none transition placeholder:text-slate-400 hover:border-slate-300 focus:border-[#28a38e] focus:ring-4 focus:ring-[#28a38e]/15" placeholder="Enter your password" /><button type="button" onClick={() => setShowPassword((visible) => !visible)} className="absolute top-1/2 right-3 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-lg text-slate-500 transition hover:bg-slate-100 hover:text-[#043e52] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#28a38e]" aria-label={showPassword ? "Hide password" : "Show password"}>{showPassword ? <EyeOff className="h-[18px] w-[18px]" aria-hidden="true" /> : <Eye className="h-[18px] w-[18px]" aria-hidden="true" />}</button></div>{errors.password && <p id="password-error" role="alert" className="mt-2 text-sm text-rose-700">{errors.password}</p>}</div>
-        <label className="flex cursor-pointer items-center gap-3 text-sm text-slate-600"><input name="remember" type="checkbox" className="h-4 w-4 rounded border-slate-300 accent-[#1e8c7a] focus:ring-[#28a38e]" />Remember me on this device</label>
-        <button type="submit" disabled={isLoading} className="flex h-13 w-full items-center justify-center gap-2 rounded-xl bg-[#043e52] px-5 text-sm font-bold text-white shadow-[0_10px_24px_rgba(4,62,82,.18)] transition hover:bg-[#03283a] hover:shadow-[0_12px_30px_rgba(4,62,82,.24)] focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#28a38e] disabled:cursor-wait disabled:opacity-75">{isLoading && <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />}{isLoading ? "Signing in…" : "Sign in securely"}</button>
-      </form>
-      <div className="mt-8 flex items-start gap-3 border-t border-slate-200 pt-6 text-sm leading-5 text-slate-500"><HelpCircle className="mt-0.5 h-[18px] w-[18px] shrink-0 text-[#1e8c7a]" aria-hidden="true" /><p>Need assistance? <a href="mailto:office@salamah.edu?subject=Management%20System%20Support" className="font-semibold text-[#1e8c7a] underline-offset-3 hover:underline focus-visible:rounded focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#28a38e]">Contact the school office</a>.</p></div>
-    </div></section>
-  </main>;
+  const clear = (field: "identifier" | "password") =>
+    setErrors((current) => ({ ...current, [field]: undefined, form: undefined }));
+
+  return (
+    <main className="min-h-screen bg-[#020b14] text-slate-100 lg:grid lg:grid-cols-[minmax(0,1.15fr)_minmax(520px,.85fr)]">
+      {/* Left Hero Panel: Noble Academic Heritage */}
+      <section className="relative hidden min-h-screen overflow-hidden border-r border-[#c5a059]/25 bg-gradient-to-br from-[#020d18] via-[#041a29] to-[#020b14] px-10 py-10 text-white lg:flex lg:flex-col xl:px-[clamp(3.5rem,7vw,8rem)] xl:py-[clamp(3.5rem,6vh,5.5rem)]">
+        <Image
+          src={brand.assets.background}
+          alt=""
+          fill
+          priority
+          sizes="55vw"
+          className="object-cover opacity-20 mix-blend-overlay"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#020b14] via-transparent to-[#020b14]/70" />
+
+        {/* Heraldic Header */}
+        <div className="relative flex items-center justify-between salamah-enter">
+          <div className="flex items-center gap-4">
+            <div className="relative h-14 w-14 flex items-center justify-center">
+              <Image
+                src={brand.assets.logo}
+                alt="Salamah International School"
+                width={56}
+                height={56}
+                className="h-full w-auto object-contain"
+                priority
+              />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <Crown className="h-3.5 w-3.5 text-[#dfba73]" />
+                <p className="font-serif text-2xl leading-none font-bold text-white tracking-wide">
+                  Salamah
+                </p>
+              </div>
+              <p className="mt-1 text-[9px] font-bold tracking-[0.24em] text-[#c5a059] uppercase">
+                International School · Katsina
+              </p>
+            </div>
+          </div>
+
+          <Link
+            href="/"
+            className="flex items-center gap-1.5 rounded-full border border-[#c5a059]/40 bg-[#072439]/70 px-4 py-1.5 text-xs font-semibold text-amber-200 transition hover:bg-[#0c3552] hover:border-[#c5a059]"
+          >
+            <ArrowLeft className="h-3.5 w-3.5 text-[#dfba73]" />
+            <span>Public Portal</span>
+          </Link>
+        </div>
+
+        {/* Central Noble Inscription */}
+        <div className="relative my-auto max-w-xl pb-10 salamah-enter [animation-delay:120ms]">
+          <div className="mb-6 flex items-center gap-3">
+            <div className="h-px w-12 bg-[#c5a059]" />
+            <span className="text-[10px] font-extrabold tracking-[0.25em] text-[#dfba73] uppercase">
+              Katsina State, Nigeria
+            </span>
+          </div>
+
+          <h1 className="font-serif text-4xl leading-[1.12] font-bold tracking-tight sm:text-5xl xl:text-6xl text-white">
+            Knowledge, Character &amp; Imperial Leadership.
+          </h1>
+
+          <p className="mt-6 max-w-lg text-base leading-relaxed text-slate-300">
+            A unified authenticated terminal providing segregated access for Super Admins, Managers, Faculty, and Scholars.
+          </p>
+
+          <div className="mt-8 flex items-center gap-4 text-xs text-[#dfba73]">
+            <div className="rounded-lg border border-[#c5a059]/30 bg-[#072133] px-3 py-1 font-mono">
+              Cambridge International NG482
+            </div>
+            <div className="rounded-lg border border-[#c5a059]/30 bg-[#072133] px-3 py-1 font-mono">
+              FME Accredited
+            </div>
+          </div>
+        </div>
+
+        {/* Security & Database Assurance Footer */}
+        <div className="relative flex items-center gap-3 text-xs text-slate-300 salamah-enter [animation-delay:220ms]">
+          <ShieldCheck className="h-5 w-5 text-[#dfba73]" aria-hidden="true" />
+          <span>Single-source truth stored on Neon PostgreSQL with signed session security</span>
+        </div>
+      </section>
+
+      {/* Right Login Panel */}
+      <section className="flex min-h-screen items-center justify-center bg-[#03111d] px-5 py-8 sm:px-10 lg:px-14">
+        <div className="w-full max-w-md salamah-enter">
+          {/* Mobile Header */}
+          <div className="mb-8 flex items-center justify-between lg:hidden">
+            <div className="flex items-center gap-3">
+              <div className="relative h-12 w-12 flex items-center justify-center">
+                <Image src={brand.assets.logo} alt="Salamah" width={48} height={48} className="h-full w-auto object-contain" />
+              </div>
+              <div>
+                <p className="font-serif text-xl font-bold leading-none text-white">Salamah</p>
+                <p className="mt-1 text-[9px] font-bold tracking-[0.18em] text-[#c5a059] uppercase">
+                  International School
+                </p>
+              </div>
+            </div>
+            <Link href="/" className="text-xs font-bold text-amber-300 underline">
+              Home
+            </Link>
+          </div>
+
+          <header>
+            <div className="flex items-center gap-2">
+              <span className="rounded-full border border-[#c5a059]/30 bg-[#c5a059]/15 px-2.5 py-0.5 text-[10px] font-bold tracking-[0.18em] text-[#dfba73] uppercase">
+                Institutional Gateway
+              </span>
+            </div>
+            <h2 className="mt-2.5 font-serif text-3xl font-bold tracking-tight text-white sm:text-4xl">
+              Welcome back
+            </h2>
+            <p className="mt-1.5 text-xs text-slate-300 leading-relaxed">
+              Authenticate with your official Salamah credentials to access your designated role workspace.
+            </p>
+          </header>
+
+          {/* Quick Demo Role Selector with Gold Badges */}
+          <div className="mt-6 rounded-2xl border border-[#c5a059]/30 bg-[#051c2d] p-4 shadow-md">
+            <div className="flex items-center justify-between mb-2.5">
+              <span className="flex items-center gap-1.5 text-[10px] font-extrabold uppercase tracking-wider text-[#dfba73]">
+                <Sparkles className="h-3.5 w-3.5 text-[#dfba73]" />
+                <span>Instant Account Selector</span>
+              </span>
+              <span className="text-[10px] text-slate-400 font-mono">Password: 12345678</span>
+            </div>
+
+            <div className="grid grid-cols-2 gap-2">
+              {demoAccounts.map((acc) => {
+                const isSelected = identifier === acc.email;
+                return (
+                  <button
+                    key={acc.role}
+                    type="button"
+                    onClick={() => setDemoAccount(acc.email, acc.pass)}
+                    className={`flex flex-col items-start rounded-xl p-2.5 text-left border transition ${
+                      isSelected
+                        ? "bg-[#0a2f4a] text-white border-[#c5a059] ring-1 ring-[#c5a059]/50 shadow-sm"
+                        : "bg-[#031522] border-slate-700/80 text-slate-300 hover:border-[#c5a059]/50 hover:bg-[#072439]"
+                    }`}
+                  >
+                    <div className="flex w-full items-center justify-between">
+                      <span className="text-xs font-serif font-bold text-white">{acc.role}</span>
+                      <span
+                        className={`text-[8.5px] px-1.5 py-0.2 rounded-full font-bold ${
+                          isSelected
+                            ? "bg-[#c5a059] text-[#020b14]"
+                            : "bg-slate-800 text-[#dfba73]"
+                        }`}
+                      >
+                        {acc.badge}
+                      </span>
+                    </div>
+                    <span className="mt-1 text-[10px] font-mono text-slate-400 truncate max-w-full">
+                      {acc.email}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          <form className="mt-6 space-y-4" noValidate onSubmit={handleSubmit}>
+            {errors.form && (
+              <p
+                role="alert"
+                className="rounded-xl border border-rose-500/40 bg-rose-950/40 px-4 py-3 text-xs leading-5 text-rose-200 font-semibold"
+              >
+                {errors.form}
+              </p>
+            )}
+
+            <div>
+              <div className="mb-1.5 flex items-center justify-between">
+                <label
+                  htmlFor="identifier"
+                  className="block text-[11px] font-bold text-[#dfba73] uppercase tracking-wider"
+                >
+                  Username or Email
+                </label>
+                {identifier.trim() && !identifier.includes("@") && (
+                  <span className="text-[10px] font-mono font-bold text-teal-400 bg-teal-950/70 border border-teal-500/30 px-2 py-0.5 rounded-md">
+                    Autofills: {identifier.trim()}@salamah.ng
+                  </span>
+                )}
+              </div>
+              <div className="relative">
+                <Mail
+                  className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  aria-hidden="true"
+                />
+                <input
+                  id="identifier"
+                  name="identifier"
+                  type="text"
+                  autoComplete="username"
+                  value={identifier}
+                  aria-invalid={Boolean(errors.identifier)}
+                  aria-describedby={errors.identifier ? "identifier-error" : undefined}
+                  onChange={(e) => {
+                    setIdentifier(e.target.value);
+                    clear("identifier");
+                  }}
+                  className="h-11 w-full rounded-xl border border-slate-700/80 bg-[#020c15] pr-4 pl-10 text-sm text-white outline-none transition placeholder:text-slate-500 hover:border-slate-600 focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/25"
+                  placeholder="e.g. staff1 or superadmin@salamah.ng"
+                />
+              </div>
+              <p className="mt-1 text-[10px] text-slate-400">
+                School members can log in using just their username (e.g. <strong className="text-slate-200">staff1</strong>). Non-school accounts must type full email.
+              </p>
+              {errors.identifier && (
+                <p id="identifier-error" role="alert" className="mt-1.5 text-xs text-rose-400 font-medium">
+                  {errors.identifier}
+                </p>
+              )}
+            </div>
+
+            <div>
+              <div className="mb-1.5 flex items-center justify-between gap-4">
+                <label
+                  htmlFor="password"
+                  className="block text-[11px] font-bold text-[#dfba73] uppercase tracking-wider"
+                >
+                  Password
+                </label>
+                <a
+                  href="mailto:it-support@salamah.edu.ng?subject=Credential%20Recovery"
+                  className="text-xs font-semibold text-[#dfba73] hover:underline"
+                >
+                  Forgot password?
+                </a>
+              </div>
+              <div className="relative">
+                <LockKeyhole
+                  className="pointer-events-none absolute top-1/2 left-3.5 h-4 w-4 -translate-y-1/2 text-slate-400"
+                  aria-hidden="true"
+                />
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  value={password}
+                  aria-invalid={Boolean(errors.password)}
+                  aria-describedby={errors.password ? "password-error" : undefined}
+                  onChange={(e) => {
+                    setPassword(e.target.value);
+                    clear("password");
+                  }}
+                  className="h-11 w-full rounded-xl border border-slate-700/80 bg-[#020c15] pr-11 pl-10 text-sm text-white font-mono outline-none transition placeholder:text-slate-500 hover:border-slate-600 focus:border-[#c5a059] focus:ring-2 focus:ring-[#c5a059]/25"
+                  placeholder="Enter your password"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((visible) => !visible)}
+                  className="absolute top-1/2 right-3 grid h-7 w-7 -translate-y-1/2 place-items-center rounded-lg text-slate-400 transition hover:bg-[#062033] hover:text-white"
+                  aria-label={showPassword ? "Hide password" : "Show password"}
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
+              {errors.password && (
+                <p id="password-error" role="alert" className="mt-1.5 text-xs text-rose-400 font-medium">
+                  {errors.password}
+                </p>
+              )}
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="mt-2 flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#c5a059] to-[#dfba73] px-5 text-sm font-bold text-[#020b14] shadow-[0_4px_20px_rgba(197,160,89,0.3)] transition hover:brightness-110 disabled:opacity-75 cursor-pointer"
+            >
+              {isLoading && (
+                <span className="h-4 w-4 animate-spin rounded-full border-2 border-[#020b14]/40 border-t-[#020b14]" />
+              )}
+              {isLoading ? "Verifying Credentials…" : "Enter Designated Dashboard"}
+            </button>
+          </form>
+
+          <div className="mt-7 flex items-start gap-3 border-t border-[#c5a059]/20 pt-4 text-xs text-slate-400">
+            <HelpCircle className="mt-0.5 h-4 w-4 shrink-0 text-[#dfba73]" />
+            <p>
+              New guardian seeking admission?{" "}
+              <Link href="/#enrollment-form" className="font-bold text-[#dfba73] hover:underline">
+                Enrol your child now
+              </Link>{" "}
+              via the dynamic admissions portal.
+            </p>
+          </div>
+        </div>
+      </section>
+    </main>
+  );
 }

@@ -1,8 +1,11 @@
 @import "tailwindcss";
 
 :root {
-  --background: #f8fafc;
-  --foreground: #1e293b;
+  --background: #020d18;
+  --foreground: #f8fafc;
+  --noble-gold: #c5a059;
+  --noble-gold-bright: #dfba73;
+  --noble-navy: #041827;
 }
 
 @theme inline {
@@ -14,14 +17,14 @@
 }
 
 ::selection {
-  background: #28a38e;
-  color: #ffffff;
+  background: #c5a059;
+  color: #020d18;
 }
 
 @keyframes salamah-enter {
   from {
     opacity: 0;
-    transform: translateY(12px);
+    transform: translateY(10px);
   }
   to {
     opacity: 1;
@@ -29,8 +32,413 @@
   }
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .salamah-enter {
-    animation: salamah-enter 600ms cubic-bezier(0.22, 1, 0.36, 1) both;
+@keyframes gold-sheen {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
   }
 }
+
+@keyframes shimmer {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .salamah-enter {
+    animation: salamah-enter 500ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+}
+
+/* Universal Custom Scrollbar Styled to Salamah Noble Teal/Gold Design */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(40, 163, 142, 0.45) #031520;
+}
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #020d18;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, rgba(40, 163, 142, 0.5) 0%, rgba(223, 186, 115, 0.5) 100%);
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, rgba(40, 163, 142, 0.85) 0%, rgba(223, 186, 115, 0.9) 100%);
+  box-shadow: 0 0 8px rgba(223, 186, 115, 0.4);
+}
+
+::-webkit-scrollbar-corner {
+  background: #020d18;
+}
+
+/* Noble Academic Custom Scrollbar - Slim & Strictly Prevents X-Overflow */
+.noble-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(197, 160, 89, 0.35) transparent;
+  overflow-x: hidden !important;
+}
+
+.noble-scrollbar::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+.noble-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.noble-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(197, 160, 89, 0.35);
+  border-radius: 9999px;
+}
+
+.noble-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: rgba(223, 186, 115, 0.7);
+}
+
+/* High Readability Academic Glass Card */
+.noble-card {
+  background: linear-gradient(135deg, rgba(7, 26, 41, 0.95) 0%, rgba(3, 16, 26, 0.98) 100%);
+  border: 1px solid rgba(197, 160, 89, 0.2);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+}
+
+.noble-card-header {
+  border-bottom: 1px solid rgba(197, 160, 89, 0.15);
+}
+
+/* ===== SALAMAH 3D NOBLE HERO SECTION STYLES ===== */
+.hero-slideshow {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center top;
+}
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center top;
+  transform-origin: center top;
+  opacity: 0;
+  animation: heroCycle5 25s infinite;
+}
+.hero-slide:nth-child(1) { animation-delay: 0s; }
+.hero-slide:nth-child(2) { animation-delay: 5s; }
+.hero-slide:nth-child(3) { animation-delay: 10s; }
+.hero-slide:nth-child(4) { animation-delay: 15s; }
+.hero-slide:nth-child(5) { animation-delay: 20s; }
+
+@keyframes heroCycle5 {
+  0% { opacity: 0; transform: scale(1.03); }
+  4% { opacity: 1; }
+  18% { opacity: 1; }
+  23% { opacity: 0; transform: scale(1.12); }
+  100% { opacity: 0; }
+}
+
+.hero-cta {
+  animation: ctaIn .8s 1.2s both;
+}
+@keyframes ctaIn {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Reduced top spacing to 30% of previous padding */
+.hero-content-wrap {
+  position: relative;
+  z-index: 10;
+  width: 100%;
+  padding: 24px 16px 32px;
+  display: flex;
+  justify-content: center;
+}
+.hero-content-card {
+  position: relative;
+  isolation: isolate;
+  box-sizing: border-box;
+  width: min(100%, 860px);
+  padding: 8px 16px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+.hero-content-card::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: -20px -36px;
+  background: radial-gradient(ellipse 45% 40% at 50% 30%, rgba(197,160,89,.35), transparent 100%), radial-gradient(ellipse 50% 32% at 50% 72%, rgba(40,163,142,.22), transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 65% 68% at 50% 50%, #000 15%, transparent 100%);
+  mask-image: radial-gradient(ellipse 65% 68% at 50% 50%, #000 15%, transparent 100%);
+  filter: blur(28px);
+  opacity: .85;
+  animation: heroGlowBreathe 12s ease-in-out infinite;
+  pointer-events: none;
+}
+.hero-content-card::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset: 2% 16%;
+  background: radial-gradient(ellipse 50% 34% at 50% 30%, rgba(197,160,89,.2), transparent 100%), radial-gradient(ellipse 49% 26% at 50% 73%, rgba(4,26,41,.6), transparent 100%);
+  filter: blur(16px);
+  pointer-events: none;
+}
+@keyframes heroGlowBreathe {
+  0%, 100% { opacity: .7; transform: scale(.98); }
+  50% { opacity: 1; transform: scale(1.035); }
+}
+
+.hero-scroll-cue {
+  position: absolute;
+  z-index: 11;
+  bottom: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  text-decoration: none;
+  text-shadow: 0 2px 8px rgba(0,0,0,.8);
+  opacity: .88;
+  transition: opacity .2s;
+}
+.hero-scroll-cue:hover, .hero-scroll-cue:focus-visible { opacity: 1; }
+.hero-scroll-cue svg { width: 22px; height: 22px; animation: scrollCueDrift 2.8s ease-in-out infinite; }
+@keyframes scrollCueDrift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(6px); }
+}
+
+.salamah-hero-logo {
+  width: min(90vw, 760px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  filter: drop-shadow(0 20px 40px rgba(0,0,0,.5));
+}
+.salamah-shield-stage {
+  position: relative;
+  width: clamp(220px, 32vw, 320px);
+  height: clamp(220px, 32vw, 320px);
+  margin-bottom: clamp(16px, 2.5vw, 26px);
+  perspective: 1200px;
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Broken circling arcs rotating in opposite directions around the logo */
+.salamah-svg-ring-gold {
+  transform-origin: 180px 180px;
+  animation: salamahRingSpin 20s linear infinite;
+  filter: drop-shadow(0 0 10px rgba(223, 186, 115, 0.7));
+}
+.salamah-svg-ring-teal {
+  transform-origin: 180px 180px;
+  animation: salamahRingSpinRev 15s linear infinite;
+  filter: drop-shadow(0 0 9px rgba(40, 163, 142, 0.7));
+}
+@keyframes salamahRingSpin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes salamahRingSpinRev {
+  0% { transform: rotate(360deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.salamah-shield-glow {
+  position: absolute;
+  inset: 10%;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(197,160,89,.4), rgba(40,163,142,.25) 50%, transparent 72%);
+  filter: blur(28px);
+  opacity: 0;
+  animation: salamahGlowIn 1.4s .2s ease-out forwards, salamahGlowPulse 4s 1.8s ease-in-out infinite;
+}
+.salamah-shield {
+  position: relative;
+  z-index: 1;
+  display: block;
+  max-width: 82%;
+  max-height: 82%;
+  width: auto;
+  height: auto;
+  opacity: 0;
+  transform-origin: 50% 50%;
+  transform-style: preserve-3d;
+  backface-visibility: visible;
+  animation:
+    salamahShieldIntro 1.45s cubic-bezier(.16,1,.3,1) forwards,
+    salamahShieldSpin 8s 1.45s linear infinite;
+  will-change: transform, opacity, filter;
+}
+
+.salamah-motto {
+  width: min(92%, 580px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0;
+  color: #dfba73;
+  font-family: var(--font-display), 'DM Serif Display', Georgia, serif;
+  font-weight: 900;
+  line-height: .95;
+  letter-spacing: -.02em;
+  text-align: center;
+}
+.salamah-major, .salamah-minor { display: block; white-space: nowrap; }
+.salamah-major {
+  font-size: clamp(28px, 4.6vw, 54px);
+  color: #ffffff;
+  opacity: 0;
+  letter-spacing: .06em;
+  animation: salamahFromLeft 1.15s .65s cubic-bezier(.16,1,.3,1) forwards;
+}
+.salamah-minor {
+  font-size: clamp(16px, 2.8vw, 32px);
+  margin-top: 5px;
+  color: #dfba73;
+  opacity: 0;
+  letter-spacing: .12em;
+  font-family: var(--font-jakarta), sans-serif;
+  font-weight: 800;
+  animation: salamahFromRight 1.15s .9s cubic-bezier(.16,1,.3,1) forwards;
+}
+.salamah-underline-reveal {
+  display: block;
+  width: 88%;
+  margin-top: 10px;
+  overflow: hidden;
+}
+.salamah-underline {
+  display: block;
+  width: 100%;
+  height: auto;
+  color: #c5a059;
+  opacity: 0;
+  transform: translateX(-105%);
+  animation: salamahUnderline 1.05s 1.35s cubic-bezier(.16,1,.3,1) forwards;
+}
+
+@keyframes salamahShieldIntro {
+  0% {
+    opacity: 0;
+    transform: translateY(26px) scale(.72) rotateX(-12deg) rotateY(-24deg);
+    filter: blur(7px) brightness(.7);
+  }
+  70% { opacity: 1; }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotateX(0deg) rotateY(0deg);
+    filter: blur(0) brightness(1);
+  }
+}
+
+@keyframes salamahShieldSpin {
+  0%   { transform: rotateX(0deg) rotateY(0deg) translateY(0); }
+  25%  { transform: rotateX(3deg) rotateY(90deg) translateY(-5px) scale(.98); }
+  50%  { transform: rotateX(0deg) rotateY(180deg) translateY(0); }
+  75%  { transform: rotateX(-3deg) rotateY(270deg) translateY(-5px) scale(.98); }
+  100% { transform: rotateX(0deg) rotateY(360deg) translateY(0); }
+}
+
+@keyframes salamahFromLeft {
+  from { opacity: 0; transform: translateX(-90px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+
+@keyframes salamahFromRight {
+  from { opacity: 0; transform: translateX(90px); filter: blur(4px); }
+  to   { opacity: 1; transform: translateX(0); filter: blur(0); }
+}
+
+@keyframes salamahUnderline {
+  0%   { opacity: 0; transform: translateX(-105%); }
+  15%  { opacity: 1; }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes salamahGlowIn {
+  to { opacity: .9; }
+}
+
+@keyframes salamahGlowPulse {
+  0%,100% { transform: scale(.9); opacity: .55; }
+  50%     { transform: scale(1.12); opacity: .95; }
+}
+
+@media (max-width: 640px) {
+  .salamah-hero-logo { width: 94vw; }
+  .salamah-motto { width: min(85%, 520px); }
+  .salamah-shield-stage { width: clamp(120px, 36vw, 180px); }
+  .salamah-major { font-size: clamp(22px, 6vw, 36px); }
+  .salamah-minor { font-size: clamp(14px, 4vw, 22px); }
+  .salamah-underline-reveal { width: 94%; }
+}
+
+@media print {
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+  }
+  header, aside, nav, button, a[href^="/dashboard"], .no-print {
+    display: none !important;
+  }
+  .printable-report-card {
+    border: 2px solid #000000 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    box-shadow: none !important;
+    padding: 20px !important;
+    margin: 0 !important;
+  }
+  .report-card-print-page {
+    page-break-after: always !important;
+    break-after: page !important;
+  }
+  .report-card-print-page:last-child {
+    page-break-after: auto !important;
+    break-after: auto !important;
+  }
+  .printable-report-card * {
+    color: #000000 !important;
+    background-color: transparent !important;
+    border-color: #cccccc !important;
+  }
+}
+
+

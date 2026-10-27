@@ -1,13 +1,16 @@
+﻿import { sqlClient } from "@/db";
+import { resolveAcademicContext } from "@/features/academic/lib/context";
 import type { UserRole } from "@/types/auth";
 
-type TemporaryWorkspaceRole = Exclude<UserRole, "superadmin">;
-
-const labels: Record<TemporaryWorkspaceRole, string> = {
-  admin: "Administrator",
-  staff: "Staff member",
-  student: "Student",
-};
-
-export function RoleWorkspace({ role }: { role: TemporaryWorkspaceRole }) {
-  return <main className="grid min-h-screen place-items-center bg-[#f8fafc] px-6"><section className="w-full max-w-xl rounded-3xl border border-slate-200 bg-white p-8 shadow-[0_18px_60px_rgba(4,62,82,.08)] sm:p-12"><p className="text-xs font-bold tracking-[0.18em] text-[#1e8c7a] uppercase">Salamah School Management System</p><h1 className="mt-4 font-display text-4xl text-[#03283a]">Your workspace is being prepared.</h1><p className="mt-4 leading-7 text-slate-600">You are signed in as a {labels[role]}. Your role-specific workspace will be available as its modules are introduced.</p><form className="mt-8" action="/api/auth/logout" method="post"><button className="rounded-xl border border-[#043e52] px-5 py-3 text-sm font-bold text-[#043e52] transition hover:bg-[#043e52] hover:text-white focus-visible:outline-3 focus-visible:outline-offset-3 focus-visible:outline-[#28a38e]">Sign out</button></form></section></main>;
+export async function RoleWorkspace({ role, userId }: { role: Exclude<UserRole, "superadmin">; userId: string }) {
+  const context = await resolveAcademicContext();
+  const [profile] = await sqlClient.query("select p.first_name,p.last_name from users u left join people p on p.id=u.person_id where u.id=$1", [userId]);
+  const students = role === "student"
+    ? await sqlClient.query("select s.id,s.admission_number,p.first_name,p.last_name from students s join people p on p.id=s.person_id join users u on u.person_id=p.id where u.id=$1", [userId])
+    : role === "guardian" ? await sqlClient.query("select s.id,s.admission_number,p.first_name,p.last_name from users u join guardians g on g.person_id=u.person_id join student_guardians sg on sg.guardian_id=g.id join students s on s.id=sg.student_id join people p on p.id=s.person_id where u.id=$1 and g.status='active' and sg.status='active'", [userId]) : [];
+  const studentIds = students.map((student) => student.id);
+  const enrolments = context && studentIds.length ? await sqlClient.query("select e.student_id,c.name as class_name,e.status from student_enrollments e join classes c on c.id=e.class_id where e.student_id=any($1::uuid[]) and e.session_id=$2", [studentIds, context.sessionId]) : [];
+  const audience = role === "student" ? "students" : role === "guardian" ? "guardians" : "staff";
+  const notices = await sqlClient.query("select id,title,content,publish_date from notices where status='active' and audience in ('everyone',$1) and section_id is null and publish_date <= (now() at time zone 'Africa/Lagos')::date and (expiry_date is null or expiry_date >= (now() at time zone 'Africa/Lagos')::date) order by publish_date desc limit 10", [audience]);
+  return <main className="min-h-screen bg-[#f8fafc] px-5 py-8 sm:px-8"><div className="mx-auto max-w-5xl"><div className="flex items-center justify-between gap-4"><p className="text-xs font-bold tracking-[.16em] text-[#1e8c7a] uppercase">{role.replaceAll("_", " ")} workspace</p><form action="/api/auth/logout" method="post"><button className="rounded-xl border border-[#043e52] px-4 py-2 text-sm font-semibold text-[#043e52]">Sign out</button></form></div><h1 className="mt-4 font-display text-4xl text-[#03283a]">Welcome{profile?.first_name ? `, ${profile.first_name}` : ""}.</h1><p className="mt-3 text-sm text-slate-600">{context ? `${context.sessionName} / ${context.termName}` : "No current academic period configured."}</p>{["student","guardian"].includes(role) && <section className="mt-7"><h2 className="text-lg font-bold text-[#043e52]">{role === "guardian" ? "Your students" : "Your enrolment"}</h2><div className="mt-4 grid gap-4 sm:grid-cols-2">{students.map((student) => { const enrolment=enrolments.find((record) => record.student_id === student.id); return <article key={student.id} className="rounded-2xl border border-slate-200 bg-white p-5"><h3 className="font-semibold text-[#043e52]">{student.first_name} {student.last_name}</h3><p className="mt-2 text-sm text-slate-500">{student.admission_number}</p><p className="mt-2 text-sm">{enrolment ? `${enrolment.class_name} · ${enrolment.status}` : "No enrolment in this session."}</p></article>; })}{!students.length && <p className="text-sm text-slate-500">No student profile is linked to this account. Contact school administration.</p>}</div></section>}<section className="mt-8"><h2 className="text-lg font-bold text-[#043e52]">School notices</h2><div className="mt-4 space-y-3">{notices.map((notice) => <article key={notice.id} className="rounded-2xl border border-slate-200 bg-white p-5"><h3 className="font-semibold text-[#043e52]">{notice.title}</h3><p className="mt-2 whitespace-pre-wrap text-sm leading-6 text-slate-600">{notice.content}</p><p className="mt-3 text-xs text-slate-500">{notice.publish_date}</p></article>)}{!notices.length && <p className="text-sm text-slate-500">No current notices.</p>}</div></section></div></main>;
 }

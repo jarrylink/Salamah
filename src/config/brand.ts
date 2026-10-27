@@ -2,7 +2,8 @@ export const brand = {
   name: "Salamah International School",
   productName: "Salamah School Management System",
   assets: {
-    logo: "https://res.cloudinary.com/djkudkxmx/image/upload/v1764669702/419960902_400956889122051_8427016156064776600_n_nmad9m.jpg",
+    logo: "https://res.cloudinary.com/djkudkxmx/image/upload/v1781003543/salamah_new_logo_xgclvt.png",
+    favicon: "https://res.cloudinary.com/djkudkxmx/image/upload/v1781003815/salamah_fav_icon_jxar2b.png",
     background: "https://res.cloudinary.com/djkudkxmx/image/upload/v1764675967/BACKGROUND_bvyjwy.png",
   },
 } as const;

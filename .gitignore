@@ -29,6 +29,11 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
+*.log
+PROJECT-*.txt
+PROJECT_AUDIT/
+SEED_CREDENTIALS.md
+salamah-*.txt
 
 # env files (can opt-in for committing if needed)
 .env*

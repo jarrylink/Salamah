@@ -4,5 +4,6 @@ import { sessionCookie } from "@/lib/auth/session";
 export async function POST(request: Request) {
   const response = NextResponse.redirect(new URL("/", request.url), { status: 303 });
   response.cookies.set(sessionCookie.name, "", { ...sessionCookie.options, maxAge: 0 });
+  response.cookies.set("salamah_academic_context", "", { path: "/", maxAge: 0 });
   return response;
 }
